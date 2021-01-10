@@ -6,8 +6,23 @@
 #http://www.chrissyx.de(.vu)/                                       #
 #####################################################################
 
-//Check, ob Verzeichnis existiert
-if (!is_dir("../counter")) die ("<b>ERROR: Verzeichnis \"counter\" nicht gefunden!</b>");
+ $temp = explode("/", $_SERVER['PHP_SELF']);
+ if (($temp[count($temp)-2]) != "counter") die("<b>ERROR:</b> Konnte Verzeichnis \"counter\" nicht finden!");
+ if (!file_exists("counter.php")) die("<b>ERROR:</b> Konnte \"counter.php\" nicht finden!");
+ if (!file_exists("style.css")) die("<b>ERROR:</b> Konnte \"style.css\" nicht finden!");
+ if (!file_exists("functions.php")) die("<b>ERROR:</b> Konnte \"functions.php\" nicht finden!");
+
+ $temp = $temp[count($temp)-1];
+ if (decoct(fileperms($temp)) != "100777") chmod($temp, 0777);
+ if (decoct(fileperms($temp)) != "100777") die("<b>ERROR:</b> Konnte für \"$temp\" kein Rechte setzen!");
+
+ if (decoct(fileperms("counter.php")) != "100777") chmod("counter.php", 0777);
+ if (decoct(fileperms("counter.php")) != "100777") die("<b>ERROR:</b> Konnte für \"counter.php\" kein Rechte setzen!");
+
+ if (decoct(fileperms("../counter/")) != "40777") chmod("../counter/", 0777);
+ if (decoct(fileperms("../counter/")) != "40777") die("<b>ERROR:</b> Konnte für den Ordner kein Rechte setzen!");
+
+ clearstatcache();
 
  include("functions.php");
 
@@ -18,7 +33,6 @@ if (!is_dir("../counter")) die ("<b>ERROR: Verzeichnis \"counter\" nicht gefunde
    $temp = fopen("pw.dat", "w");
    fwrite($temp, md5($_POST['pw']));
    fclose($temp);
-   $_SESSION['pw'] = md5($_POST['pw']);
    head("", "CHS - Counter: Administration", "", "", "style.css", "", "");
    echo("Passwort gespeichert - bitte damit <a href=\"" . $_SERVER['PHP_SELF'] . "\">einloggen!</a>");
    tail();
@@ -28,7 +42,7 @@ if (!is_dir("../counter")) die ("<b>ERROR: Verzeichnis \"counter\" nicht gefunde
    $pw = file("pw.dat");
    if ((md5($_POST['pw']) == $pw[0]) or $_SESSION['pw'] == $pw[0])
    {
-    if (!$_SESSION['pw']) $_SESSION['pw'] = $pw;
+    if (!$_SESSION['pw']) $_SESSION['pw'] = $pw[0];
     unset($pw);
 #-------------------------------
     switch($action)
@@ -63,7 +77,7 @@ if (!is_dir("../counter")) die ("<b>ERROR: Verzeichnis \"counter\" nicht gefunde
       ?>
 
   Um den Counter nun zu nutzen, füge diesen Code an der gewünschten Stelle in den Quelltext deiner Seite ein:<br /><br />
-  <code>&lt;!-- CHS - Counter --&gt;&lt;?php include("counter/counter.php<?=$_POST['bild']?>"); ?&gt;&lt;!-- /CHS - Counter --&gt;</code><br /><br />
+  <code>&lt;!-- CHS - Counter --&gt;&lt;?php <?=$_POST['bild']?>include("counter/counter.php"); ?&gt;&lt;!-- /CHS - Counter --&gt;</code><br /><br />
   <a href="<?=$_SERVER['PHP_SELF']?>">Zurück zur Administration</a><br />
 
       <?php
@@ -83,7 +97,7 @@ if (!is_dir("../counter")) die ("<b>ERROR: Verzeichnis \"counter\" nicht gefunde
   <input type="radio" name="backup" onClick="this.form.backup2.disabled=false;">Ja, alle <input type="text" name="backup2" value="50" disabled> Hits<br />
   <input type="radio" name="backup" onClick="this.form.backup2.disabled=true;" checked>Nein<br /><br />
   <input type="checkbox" name="ipsperre" value="true"> IP Sperre aktivieren?<br /><br />
-  <input type="radio" name="bild" value="" disabled>Ausgabe des Counterstandes als Bild (z.B. "<img src="1.png" alt="1"><img src="2.png" alt="2"><img src="3.png" alt="3">")<br />
+  <input type="radio" name="bild" value="$bild=true; ">Ausgabe des Counterstandes als Bild (z.B. "<img src="1.png" alt="1"><img src="2.png" alt="2"><img src="3.png" alt="3">")<br />
   <input type="radio" name="bild" value="" checked>Ausgabe des Counterstandes als Text (z.B. "123")<br /><br />
   <input type="submit" value="Installieren!"> <input type="reset" value="Reset"> <input type="button" value="Zurück" onClick="document.location.href='<?=$_SERVER['PHP_SELF']?>';">
   <input type="hidden" name="action" value="install">
@@ -141,10 +155,10 @@ if (!is_dir("../counter")) die ("<b>ERROR: Verzeichnis \"counter\" nicht gefunde
      if ($_FILES['newbackup'])
      {
       head("", "CHS - Counter: Administration", "Counter, CHS, Chrissyx", "Counter von CHS", "style.css", "", "");
-      if (move_uploaded_file($_FILES['newbackup']['tmp_name'], "backup.dat")) echo("BackUp empfangen!<br />\n Verarbeite...<br />\n");
-      if (copy("backup.dat", "counter.dat")) echo("BackUp eingespielt!<br /><br />\n Name: " . $_FILES['newbackup']['name'] . "<br />\n Grösse: " . $_FILES['newbackup']['size'] . "<br />\n");
+      if (move_uploaded_file($_FILES['newbackup']['tmp_name'], "backup.dat")) echo("  BackUp empfangen!<br />\n  Verarbeite...<br />\n");
+      if (copy("backup.dat", "counter.dat")) echo("  BackUp eingespielt!<br /><br />\n  Name: " . $_FILES['newbackup']['name'] . "<br />\n  Grösse: " . $_FILES['newbackup']['size'] . " Bytes<br />\n  Typ: " . $_FILES['newbackup']['type'] . "<br /><br />\n");
       ?>
-  <br />
+
   <input type="button" value="Zurück" onClick="document.location.href='<?=$_SERVER['PHP_SELF']?>';"><br />
 
       <?php
@@ -182,7 +196,7 @@ if (!is_dir("../counter")) die ("<b>ERROR: Verzeichnis \"counter\" nicht gefunde
      <form action="<?=$_SERVER['PHP_SELF']?>" method="post">
      <input type="submit" value="Installieren / Deinstallieren"<?php if (file_exists("counter.dat")) echo(" onClick=\"return confirm('Sicher? Der jetztige Counterstand wird NICHT gespeichert!');\""); ?>>
      <input type="hidden" name="mode" value="login">
-     <input type="hidden" name="action" value="<?php (file_exists("counter.dat")) ? print("uninstall") : print("install"); ?>">
+     <input type="hidden" name="action" value="<?php (file_exists("counter.dat")) ? print("un") : print(""); ?>install">
      </form>
     </td>
     <td>

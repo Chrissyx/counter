@@ -1,4 +1,11 @@
 <?php
+
+#####################################################################
+#Script written by Chrissyx                                         #
+#You may use and edit this script, if you don't remove this comment!#
+#http://www.chrissyx.de(.vu)/                                       #
+#####################################################################
+
  $counter = file("counter/counter.dat");
  $backup = trim($counter[1])-1;
  $counter = trim($counter[0])+1;
@@ -15,31 +22,25 @@
   else $save = true;
  }
 
- if ($backup == 0)
+ if ($backup <= 0 && file_exists("counter/backup.dat"))
  {
   $backup = file("counter/backup.dat");
   $backup = $backup[1];
+  if ($backup > $counter)
+  {
+   $counter = file("counter/backup.dat");
+   $counter = trim($counter[0]);
+  }
   $temp = fopen("counter/backup.dat", "w");
   fwrite($temp, $counter . "\n" . $backup);
   fclose($temp);
  }
 
- if ($_GET['bild'])
+ if ($bild)
  {
   settype($counter, "string");
-  for ($i=0; $i<strlen($counter); $i++) switch($counter[$i])
-  {
-   case 0: echo("<img src=\"counter/0.png\" alt=\"0\">"); break;
-   case 1: echo("<img src=\"counter/1.png\" alt=\"1\">"); break;
-   case 2: echo("<img src=\"counter/2.png\" alt=\"2\">"); break;
-   case 3: echo("<img src=\"counter/3.png\" alt=\"3\">"); break;
-   case 4: echo("<img src=\"counter/4.png\" alt=\"4\">"); break;
-   case 5: echo("<img src=\"counter/5.png\" alt=\"5\">"); break;
-   case 6: echo("<img src=\"counter/6.png\" alt=\"6\">"); break;
-   case 7: echo("<img src=\"counter/7.png\" alt=\"7\">"); break;
-   case 8: echo("<img src=\"counter/8.png\" alt=\"8\">"); break;
-   case 9: echo("<img src=\"counter/9.png\" alt=\"9\">"); break;
-  }
+  $size = strlen($counter);
+  for ($i=0; $i<$size; $i++) echo("<img src=\"counter/" . $counter[$i] . ".png\" alt=\"" . $counter[$i] . "\">");
   settype($counter, "integer");
  }
  else echo ($counter);
