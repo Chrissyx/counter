@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="de" xml:lang="de">
+ <head>
+  <title>CHS &ndash; Counter: Readme</title>
+  <meta name="author" content="Chrissyx" />
+  <meta name="copyright" content="&copy; 2004 - 2010 by Chrissyx" />
+  <meta name="keywords" content="Counter, CHS, readme, liesmich, Chrissyx" />
+  <meta name="description" content="Readme for the counter from CHS" />
+  <meta name="robots" content="all" />
+  <meta name="revisit-after" content="28 days" />
+  <meta name="generator" content="Notepad 4.10.1998" />
+  <meta http-equiv="Content-Language" content="de-DE" />
+  <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta http-equiv="Content-Script-Type" content="text/javascript" />
+  <link rel="stylesheet" media="all" href="../chscore/styles/style.css" />
+ </head>
+ <body>
+  <h1>Chrissyx Homepage Scripts &ndash; Counter</h1>
+  <h2>Version: 3.0</h2>
+  <h3><a href="#ENGLISH">ENGLISH - CLICK HERE!</a></h3>
+
+  <h4>Inhalt</h4>
+  <ul>
+   <li><a href="#de_intro">Vorwort</a></li>
+   <li><a href="#de_reqs">Vorraussetzungen</a></li>
+   <li><a href="#de_install">Installation</a></li>
+   <li><a href="#de_faq">FAQ</a></li>
+   <li><a href="#de_credits">Credits</a></li>
+  </ul><br />
+
+  <h4 id="de_intro">Vorwort</h4>
+  <p>Mehr als nur ein einfacher Counter, hat dieser zust&auml;tzliche Features und eine multilinguale Administrationsoberfl&auml;che. Von dort aus ist alles einstellbar, die Art der Ausgabe bis hin zu den Speicherorten der internen Systemdateien; gecachte Einstellungen werden dabei automatisch erneuert und sofort wirksam. Die Backup-Funktion ist so einstellbar, dass Ihr festlegt nach wievielen Hits jeweils der aktuelle Stand per E-Mail versendet wird. Mit der optionalen IP Sperre k&ouml;nnt Ihr entweder einen reinen Hits-Counter betreiben oder einen echten Besucherz&auml;hler.</p><br />
+
+  <h4 id="de_reqs">Vorraussetzungen</h4>
+  <ul>
+   <li>PHP ab 5.1</li>
+   <li>chmod-f&auml;higer Webspace</li>
+  </ul><br />
+
+  <h4 id="de_install">Installation</h4>
+  <p>Die Installation ist gewohnt einfach: Lade in dem Ordner, wo deine Webseite ist und auf welcher der Counter zum Einsatz kommen soll, den Ordner &quot;chscore&quot; samt Inhalt hoch. Rufe danach den Ordner &quot;chscore/modules/CHSCounter/&quot; auf und folge dann den Anweisungen.</p>
+  <p>WICHTIG: Die V3.X ist NICHT abw&auml;rtskompatibel zu allen Versionen davor! Falls Du also eine &auml;ltere Version betreibst, notiere dir den Counterstand und sichere (wenn vorhanden) die &quot;ip.dat&quot;-Datei aus dem &quot;counter&quot;-Ordner. Danach den &quot;counter&quot;-Ordner l&ouml;schen und auch den damals eingef&uuml;gten Code von deiner Seite entfernen. Bei der Installation der 3.0er kannst Du dann deinen vorhandenen Counterstand wieder eingeben und wenn Du vorher die &quot;ip.dat&quot; gesichert hattest, die Einstellung daf&uuml;r anpassen. Merke dir dabei den angegebenen Pfad und Dateinamen, denn dort musst Du nach der Installation die &quot;ip.dat&quot; wieder hochladen und &uuml;berschreiben; ggf. umbenennen.</p><br />
+
+  <h4 id="de_faq">FAQ</h4>
+  <ul>
+   <li style="margin-bottom:10px;">Wie kann ich meinen Counter verwalten?<br />
+       Rufe, wie schon bei der Installation auch, die &quot;index.php&quot; im &quot;chscore/modules/CHSCounter/&quot;-Ordner auf und folge den Anweisungen.</li>
+   <li style="margin-bottom:10px;">Ich habe mein Passwort vergessen!<br />
+       Begib dich ganz normal zum Login, dort kannst Du dir auch ein neues Passwort zu schicken lassen. Das alte bleibt weiterhin g&uuml;ltig, bis Du dich mit dem neuen eingeloggt hast.</li>
+   <li style="margin-bottom:10px;">Kann man andere Bilder f&uuml;r die Zahlenausgabe nutzen?<br />
+       Na klar, Du brauchst nur die vorhandenen PNG-Bilder durch deine eigenen zu ersetzen. F&uuml;r jede Zahl ein eigenes Bild, also die &quot;0&quot; muss &quot;0.png&quot; hei&szlig;en, die &quot;1&quot; muss &quot;1.png&quot; hei&szlig;en, usw. Die Zahlenbilder m&uuml;ssen alle im &quot;chscore/modules/CHSCounter/&quot;-Ordner sein.</li>
+   <li style="margin-bottom:10px;">Ich erhalte die Meldung &quot;ERROR: Can't create config file!&quot;&#8253;<br />
+       Es werden Schreibrechte benötigt, die Du in so einem Fall wohl selber setzen musst. &Auml;ndere mit deinem FTP Programm per chmod-Befehl die Rechte auf <code>755</code> für folgende Ordner:
+       <ul>
+        <li>chscore/data/</li>
+        <li>chscore/modules/CHSCounter/</li>
+       </ul></li>
+   <li style="margin-bottom:10px;">Kann ich den Counter auch in andere Sprachen &uuml;bersetzen?<br />
+       Aber sicher: Kopiere dir die passende INI-Datei aus dem Ordner &quot;chscore/languages/&quot; (z.B. de-DE.CHSCounter.ini) und benenne das offizielle Sprachk&uuml;rzel im Dateinamen in die jeweilige Sprache um. Z.B. &quot;fr-FR.CHSCounter.ini&quot; f&uuml;r Franz&ouml;sisch aus Frankreich oder &quot;nl.CHSCounter.ini&quot; f&uuml;r allgemein Niederl&auml;ndisch. Übersetzte dann die Texte in den Anf&uuml;hrungszeichen und achte dabei auf die Hinweise am Anfang der Datei. Wenn Du eine vollst&auml;ndige Übersetzung hast, lade sie in den &quot;chscore/languages/&quot;-Ordner und w&auml;hle sie ggf. im Sprachmen&uuml; der Administration aus. Bitte schick sie mir auch, so dass ich anderen diese ebenfalls zur Verf&uuml;gung stellen kann! :)</li>
+   <li>Meine Frage wurde nicht beantwortet!<br />
+       Dann besuch mein Forum unter <a href="http://www.chrissyx-forum.de.vu/" target="_blank">http://www.chrissyx-forum.de.vu/</a> oder schreib mir eine E-Mail: <a href="mailto:chris@chrissyx.com">chris@chrissyx.com</a></li>
+  </ul><br />
+
+  <h4 id="de_credits">Credits</h4>
+  <p>&copy; 2004 - 2010 by Chrissyx<br />
+  Powered by V4 LeetCore Technology<br />
+  <a href="http://www.chrissyx.de.vu/" target="_blank">http://www.chrissyx.de(.vu)/</a><br />
+  <a href="http://www.chrissyx.com/" target="_blank">http://www.chrissyx.com/</a></p>
+
+  <hr id="ENGLISH"/>
+
+  <h4>Content</h4>
+  <ul>
+   <li><a href="#en_reqs">Requirements</a></li>
+   <li><a href="#en_install">Installation</a></li>
+   <li><a href="#en_faq">FAQ</a></li>
+   <li><a href="#en_credits">Credits</a></li>
+  </ul><br />
+
+  <h4 id="en_reqs">Requirements</h4>
+  <ul>
+   <li>PHP 5.1 or higher</li>
+   <li>chmod-able webspace</li>
+  </ul><br />
+
+  <h4 id="en_install">Installation</h4>
+  <p>The installation is simple as usual: Upload in that directory, in which your website is (and you're planning to use the counter), the folder &quot;chscore&quot; including its contents. Point your browser to the &quot;chscore/modules/CHSCounter/&quot; folder and follow the instructions.</p><br />
+
+  <h4 id="en_faq">FAQ</h4>
+  <ul>
+   <li style="margin-bottom:10px;">How to manage my counter?<br />
+       Just point your browser to the &quot;index.php&quot; file in the &quot;chscore/modules/CHSCounter/&quot; folder, as you did during the installation and follow the instructions.</li>
+   <li style="margin-bottom:10px;">I've forgot my password!<br />
+       Go to the login form, you can request a new password there. The old one is still valid until you log in with the new password.</li>
+   <li style="margin-bottom:10px;">Can I use other images for displaying the counter value?<br />
+       Sure, you just need to replace the provided PNG images with your own ones. For each number an own image, that means the &quot;0&quot; has to be named &quot;0.png&quot;, the &quot;1&quot; has to be named &quot;1.png&quot;, etc. Put all images with numbers into the &quot;chscore/modules/CHSCounter/&quot; folder.</li>
+   <li style="margin-bottom:10px;">I'm getting a message &quot;ERROR: Can't create config file!&quot;&#8253;<br />
+       Set with your FTP program and chmod command the permisson to <code>755</code> for these folders:
+       <ul>
+        <li>chscore/data/</li>
+        <li>chscore/modules/CHSCounter/</li>
+       </ul></li>
+   <li style="margin-bottom:10px;">Is it possible to translate the counter to another language?<br />
+       Of course, copy a fitting INI file (e.g. en-US.CHSCounter.ini) from the &quot;chscore/languages/&quot; folder and rename the official language code of the filename to the corresponding of the desired language. E.g. &quot;fr-FR.CHSCounter.ini&quot; for French in France or &quot;nl.CHSCounter.ini&quot; for general Dutch. Start translating the strings between the quotation marks and check the hints at the beginning of the file. By having a complete translation, upload it to the &quot;chscore/languages/&quot; folder and if applicable choose it from the language menu in the administration panel. Please send it also to me for providing it to other user! :)</li>
+   <li style="margin-bottom:10px;">My question isn't answered here!<br />
+       Please visit my board at <a href="http://www.chrissyx.com/forum/" target="_blank">http://www.chrissyx.com/forum/</a> or write me an e-mail: <a href="mailto:chris@chrissyx.com">chris@chrissyx.com</a></li>
+  </ul><br />
+
+  <h4 id="en_credits">Credits</h4>
+  <p>&copy; 2004 - 2010 by Chrissyx<br />
+  Powered by V4 LeetCore Technology<br />
+  <a href="http://www.chrissyx.de.vu/" target="_blank">http://www.chrissyx.de(.vu)/</a><br />
+  <a href="http://www.chrissyx.com/" target="_blank">http://www.chrissyx.com/</a></p>
+ </body>
+</html>
