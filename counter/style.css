@@ -10,12 +10,12 @@ input, textarea
  border:2px solid #000000;
 }
 
-input:hover
+input:hover, textarea:hover
 {
  border:2px dotted #000000;
 }
 
-input[type=radio]
+img, input[type=radio], input[type=checkbox]
 {
  border:none;
 }
