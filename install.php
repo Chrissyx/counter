@@ -1,37 +1,70 @@
+<?php
+
+############################################################
+#Script written by Chrissyx				   #
+#You may use this script, if you don't remove this comment!#
+#http://www.chrissyx.de(.vu)/				   #
+############################################################
+
+//Check, ob Verzeichnis existiert
+if (!is_dir("../counter")) die ("<b>ERROR: Verzeichnis \"counter\" nicht gefunden!</b>");
+
+//Passwortgeschichte
+$pw = $HTTP_GET_VARS["pw"];
+if (!$pw and !file_exists("pw.var")) die ("<form action=\"install.php\">Passwort festlegen: <input type=\"text\" name=\"pw\"> <input type=\"submit\" value=\"Weiter\"></form>");
+elseif ($pw and !file_exists("pw.var"))
+{
+ $pwvar = fopen ("pw.var", "w");
+ fwrite ($pwvar, $pw);
+ fclose ($pwvar);
+}
+else
+{
+ $pwvar = fopen ("pw.var", "r");
+ $pwreal = fgets ($pwvar);
+ fclose ($pwvar);
+ if (!$pw) die ("Kein Passwort angegeben!");
+ elseif ($pwreal <> $pw) die ("Falsches Passwort!");
+}
+
+//chmodden
+$script = "install.php";
+$chmod = decoct(fileperms($script));
+if (!$chmod == 100777) chmod ($script, 0777);
+$chmod = decoct(fileperms($script));
+if (!$chmod == 100777) die ("<b>ERROR: Konnte keine Rechte setzen! Bitte \"install.php\" manuell auf \"chmod 777\" setzen und Script erneut ausführen!");
+
+$script = "../counter";
+$chmod = decoct(fileperms($script));
+if (!$chmod == 40777) chmod ($script, 0777);
+$chmod = decoct(fileperms($script));
+if (!$chmod == 40777)  die ("<b>ERROR: Konnte keine Rechte setzen! Bitte das Verzeichnis \"counter\" manuell auf \"chmod 777\" setzen und Script erneut ausführen!");
+
+//Zwischenspeicher löschen
+clearstatcache();
+
+//Auf geht's
+$counter = $_GET["counter"];
+?>
+
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//DE"
    "http://www.w3.org/TR/html4/loose.dtd">
 <html lang="de">
  <head>
-  <link rel="SHORTCUT ICON" href="http://www.chrissyx.de/favicon.ico">
-  <title>Chrissyx Homepage Scripts - Counter</title>
+  <link rel="SHORTCUT ICON" href="http://www.chrissyx.com/favicon.ico">
+  <title>Chrissyx Homepage Scripts - Counter Administration</title>
   <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   <meta name="author" content="Chrissyx">
   <meta name="dc.language" scheme="rfc1766" content="de">
-  <link rel="stylesheet" type="text/css" href="http://www.chrissyx.de/style.css">
+  <link rel="stylesheet" type="text/css" href="http://www.chrissyx.com/style.css">
 
   <script type="text/javascript">
   function frage(z)
   {
-   if (z==1)
-   {
-    if (confirm("Sicher? Der jetztige Counterstand wird NICHT gespeichert!"))
-    location.href="install.php?counter=reset";
-   }
-
-   if (z==2)
-   {
-    location.href="install.php?counter=save";
-   }
-
-   if (z==3)
-   {
-    location.href="install.php?counter=backup";
-   }
-
-   if (z==4)
-   {
-    self.close();
-   }
+   if (z==1) if (confirm("Sicher? Der jetztige Counterstand wird NICHT gespeichert!")) location.href="install.php?pw=<?php echo ($pwreal); ?>&counter=reset";
+   if (z==2) location.href="install.php?pw=<?php echo ($pwreal); ?>&counter=save";
+   if (z==3) location.href="install.php?pw=<?php echo ($pwreal); ?>&counter=backup";
+   if (z==4) self.close();
   }
   </script>
 
@@ -39,43 +72,32 @@
  <body>
 
   <?php
-
-  //Script written by Chrissyx
-  //You may use this script, if you don't remove this comment!
-  //http://www.chrissyx.de/
-
-  $counter = $_GET["counter"];
   if ($counter == save)
   {
    ?>
     <b>Counter BackUp sichern</b><br><br>
     Klicke <a href="backup.var">hier</a>, um den jetzigen BackUp Stand zu sichern. Bewahre die Datei "backup.var" gut auf, wenn Du sie mal einspielen willst!<br>
-    Klicke danach <a href="install.php">hier</a>, um in die Administration zurück zu kommen.
+    Klicke danach <a href="install.php?pw=<?php echo ($pwreal); ?>">hier</a>, um in die Administration zurück zu kommen.
    <?php
 
-   die ("<br><br><br><br>(c) 2004 by Chrissyx<br><a href=\"http://www.chrissyx.de/\" target=\"_blank\">http://www.chrissyx.de/</a><br><a href=\"http://www.chrissyx.de.vu/\" target=\"_blank\">http://www.chrissyx.de.vu/</a>");
+   die ("<br><br><br><br>© 2004 by Chrissyx<br><a href=\"http://www.chrissyx.com/\" target=\"_blank\">http://www.chrissyx.com/</a><br><a href=\"http://www.chrissyx.de(.vu)/\" target=\"_blank\">http://www.chrissyx.de(.vu)/</a>");
   }
 
   if ($counter == reset)
   {
-   if (file_exists("backup.var"))
-   {
-    unlink ("backup.var");
-   }
-    unlink ("counter.var");
-
-    ?>
+   if (file_exists("backup.var")) unlink ("backup.var");
+   unlink ("counter.var");
+   ?>
 
   <b>Counter Deinstallation</b><br><br>
   Counter deinstalliert.<br><br><br>
   <b>Counter Neuinstallation</b><br><br>
-  Klicke <a href="install.php">hier</a>, für eine Neuinstallation des Counters.<br>
+  Klicke <a href="install.php?pw=<?php echo ($pwreal); ?>">hier</a>, für eine Neuinstallation des Counters.<br>
   Klicke <a href="javascript:self.close()">hier</a>, um zu beenden.
 
-   <?php
-
-    die ("<br><br><br><br>(c) 2004 by Chrissyx<br><a href=\"http://www.chrissyx.de/\" target=\"_blank\">http://www.chrissyx.de/</a><br><a href=\"http://www.chrissyx.de.vu/\" target=\"_blank\">http://www.chrissyx.de.vu/</a>");
-   }
+  <?php
+  die ("<br><br><br><br>© 2004 by Chrissyx<br><a href=\"http://www.chrissyx.com/\" target=\"_blank\">http://www.chrissyx.com/</a><br><a href=\"http://www.chrissyx.de(.vu)/\" target=\"_blank\">http://www.chrissyx.de(.vu)/</a>");
+  }
 
   if ($counter == upload)
   {
@@ -93,10 +115,10 @@
    }
    ?>
 
-    Klicke <a href="install.php">hier</a>, um in die Administration zurück zukommen.
+    Klicke <a href="install.php?pw=<?php echo ($pwreal); ?>">hier</a>, um in die Administration zurück zukommen.
 
    <?php
-   die ("<br><br><br><br>(c) 2004 by Chrissyx<br><a href=\"http://www.chrissyx.de/\" target=\"_blank\">http://www.chrissyx.de/</a><br><a href=\"http://www.chrissyx.de.vu/\" target=\"_blank\">http://www.chrissyx.de.vu/</a>");
+   die ("<br><br><br><br>© 2004 by Chrissyx<br><a href=\"http://www.chrissyx.com/\" target=\"_blank\">http://www.chrissyx.com/</a><br><a href=\"http://www.chrissyx.de(.vu)/\" target=\"_blank\">http://www.chrissyx.de(.vu)/</a>");
   }
 
   if ($counter == backup)
@@ -107,16 +129,17 @@
    Hier kannst Du ein altes BackUp einspielen.<br>
    Bitte lade deine alte "backup.var" hier hoch!<br><br>
 
-   <form action="install.php?counter=upload" method="post" enctype="multipart/form-data">
+   <form action="install.php?pw=<?php echo ($pwreal); ?>&counter=upload" method="post" enctype="multipart/form-data">
+   <!--Passwort eingeben: <input type="text" name="pw"><br><br>-->
    <input type="file" name="upload">
    <input type="submit" value="Hochladen">
    </form>
 
-   <a href="install.php">Abbruch.</a>
+   <a href="install.php?pw=<?php echo ($pwreal); ?>">Abbruch.</a>
 
    <?php
 
-   die ("<br><br><br><br>(c) 2004 by Chrissyx<br><a href=\"http://www.chrissyx.de/\" target=\"_blank\">http://www.chrissyx.de/</a><br><a href=\"http://www.chrissyx.de.vu/\" target=\"_blank\">http://www.chrissyx.de.vu/</a>");
+   die ("<br><br><br><br>© 2004 by Chrissyx<br><a href=\"http://www.chrissyx.com/\" target=\"_blank\">http://www.chrissyx.com/</a><br><a href=\"http://www.chrissyx.de(.vu)/\" target=\"_blank\">http://www.chrissyx.de(.vu)/</a>");
   }
 
   if (file_exists("counter.var"))
@@ -162,6 +185,7 @@
     <td>
      <form action="install.php">
      <u>Willkommen zur Chrissyx Homepage Scripts - Counter Installation!</u><br><br>
+     Passwort eingeben: <input type="text" name="pw" tabindex="9"><br><br>
      Bitte gebe den Startwert an, bei dem der Counter starten soll:<br>
      <input type="text" name="counter" size="58" value="0" tabindex="1"><br><br>
 
@@ -213,103 +237,29 @@
      ?>
 
   <b>Installation erfolgreich!</b><br>
-  Füge nun diese Codezeilen in den Quelltext deiner Seite ein, um den Counter nutzen zu können:<br><br>
+  Füge nun diese Codezeile in den Quelltext <u>an der entsprechenden Stelle</u> deiner Seite ein, um den Counter nutzen zu können:<br><br>
   <hr>
   <code>
-  &lt;?php<br><br>
-
-  //Script written by Chrissyx<br>
-  //You may use this script, if you don't remove this comment!<br>
-  //http://www.chrissyx.de/<br><br>
-
-  if (file_exists("counter.var"))<br>
-  {<br>
-  <br>
-   if (file_exists("backup.var"))<br>
-   {<br>
-    $exist = true;<br>
-   } else<br>
-   {<br>
-    $exist = false;<br>
-   }<br><br>
-
-
-   if ($exist == true)<br>
-   {<br>
-    $backupfile = fopen ("backup.var", "r");<br>
-    $temp = fgets($backupfile);<br>
-    fclose($backupfile);<br>
-    $array = explode("_", $temp);<br>
-    $hits = $array[0];<br>
-    $hitsfull = $array[1];<br>
-    $backup = $array[2];<br>
-   }<br><br>
-
-
-   $counterfile = fopen ("counter.var", "r");<br>
-   $counter = fgets($counterfile);<br>
-   fclose($counterfile);<br><br>
-
-   if ($backup >= $counter)<br>
-   {<br>
-    $counter = $backup;<br>
-   }<br>
-   $counter++;<br>
-   if ($exist == true)<br>
-   {<br>
-    $hits--;<br>
-   }<br>
-   echo ($counter);<br><br>
-
-   $counterfile = fopen ("counter.var", "w");<br>
-   fwrite($counterfile, $counter);<br>
-   fclose($counterfile);<br><br>
-
-
-   if ($exist == true)<br>
-   {<br>
-    if ($hits <= 0)<br>
-    {<br>
-     $hits = $hitsfull;<br>
-     $backup = $counter;<br>
-    }<br>
-    $hits .= _;<br>
-    $hits .= $hitsfull;<br>
-    $hits .= _;<br>
-    $hits .= $backup;<br>
-    $backupfile = fopen ("backup.var", "w");<br>
-    fwrite($backupfile, $hits);<br>
-    fclose($backupfile);<br>
-   }<br><br>
-
-  } else<br>
-  {<br>
-   echo ("&lt;b>ERROR: Keine \"counter.var\" gefunden! Führe das Installationsscript aus!&lt;/b>");<br>
-  }<br><br>
-
-  ?&gt;
+  &lt;?php include ("counter/counter.php");  ?&gt;
   </code>
   <hr><br>
 
-  Klicke <a href="install.php">hier</a> oder rufe das Installationsscript nochmal auf, um in die Counter Administration zu kommen.<br>
+  Klicke <a href="install.php?pw=<?php echo ($pwreal); ?>">hier</a> oder rufe das Installationsscript nochmal auf, um in die Counter Administration zu kommen.<br>
   Ansonsten kannst Du das Installationsscript löschen, wenn Du keine weiteren Sachen machen möchtest.
 
      <?php
      }
     }
-   } else
-    {
-     echo ("<b>ERROR: Kein Startwert angegeben!</b>");
-    }
+   } else echo ("<b>ERROR: Kein Startwert angegeben!</b>");
    }
   }
 
 
   ?>
   <br><br><br>
-  (c) 2004 by Chrissyx<br>
-  <a href="http://www.chrissyx.de/" target="_blank">http://www.chrissyx.de/</a><br>
-  <a href="http://www.chrissyx.de.vu/" target="_blank">http://www.chrissyx.de.vu/</a>
+  © 2004 by Chrissyx<br>
+  <a href="http://www.chrissyx.com/" target="_blank">http://www.chrissyx.com/</a><br>
+  <a href="http://www.chrissyx.de(.vu)/" target="_blank">http://www.chrissyx.de(.vu)/</a>
   </font>
  </body>
 </html>
