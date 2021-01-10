@@ -6,7 +6,7 @@
  * @copyright (c) 2004 - 2010 by Chrissyx
  * @license http://creativecommons.org/licenses/by-nc-sa/3.0/ Creative Commons 3.0 by-nc-sa
  * @package CHS_Counter
- * @version 3.0
+ * @version 3.0.2
  */
 class CHSCounter implements CHSModule
 {
@@ -64,8 +64,10 @@ class CHSCounter implements CHSModule
   */
  public function execute()
  {
+  $temp = fopen($this->config['counter'], 'r+');
+  flock($temp, LOCK_SH);
   //Counting
-  $this->curCounter = file_get_contents($this->config['counter'])+1;
+  $this->curCounter = fgets($temp)+1; #file_get_contents($this->config['counter'])+1;
   //Manage IP
   if(!empty($this->config['ip']))
    $this->processIP();
@@ -81,13 +83,15 @@ class CHSCounter implements CHSModule
   //Save counter
   if($this->update)
   {
-   $temp = fopen($this->config['counter'], 'w');
-   while(!flock($temp, LOCK_EX | LOCK_NB))
+   //Get proper lock, "shared" is not enough anymore
+   while(!flock($temp, LOCK_EX))
     usleep(mt_rand(1, 100)*1000); //Wait between 1 to 100 millisecs to get lock
+   rewind($temp); //Revert action from fgets()
    fwrite($temp, $this->curCounter);
-   flock($temp, LOCK_UN);
-   fclose($temp);
   }
+  //Release lock
+  flock($temp, LOCK_UN);
+  fclose($temp);
  }
 }
 ?>
