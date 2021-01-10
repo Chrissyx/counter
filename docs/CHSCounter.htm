@@ -26,7 +26,7 @@
    <li><a href="#de_intro">Vorwort</a></li>
    <li><a href="#de_reqs">Vorraussetzungen</a></li>
    <li><a href="#de_install">Installation</a></li>
-   <li><a href="#de_update">Update von 3.0 auf 3.1</a></li>
+   <li><a href="#de_update">Update auf 3.1</a></li>
    <li><a href="#de_faq">FAQ</a></li>
    <li><a href="#de_credits">Credits</a></li>
   </ul><br />
@@ -41,11 +41,29 @@
   </ul><br />
 
   <h4 id="de_install">Installation</h4>
-  <p>Lade in dem Ordner, wo deine Webseite ist und auf welcher der Counter zum Einsatz kommen soll, den Ordner &quot;chscore&quot; samt Inhalt hoch. Falls der Ordner bereits existiert, k&ouml;nnen vorhandene Dateien ersetzt werden. Rufe danach deine Seite auf und h&auml;nge ein <code>?module=CHSCounterAdmin</code> an die Adresse an. Folge dann den Anweisungen.</p>
-  <p>WICHTIG: Die V3.X ist NICHT abw&auml;rtskompatibel zu allen Versionen davor! Falls Du also eine &auml;ltere Version betreibst, notiere dir den Counterstand und sichere (wenn vorhanden) die &quot;ip.dat&quot;-Datei aus dem &quot;counter&quot;-Ordner. Danach den &quot;counter&quot;-Ordner l&ouml;schen und auch den damals eingef&uuml;gten Code von deiner Seite entfernen. Bei der Installation der 3.Xer kannst Du dann deinen vorhandenen Counterstand wieder eingeben und wenn Du vorher die &quot;ip.dat&quot; gesichert hattest, die Einstellung daf&uuml;r anpassen. Merke dir dabei den angegebenen Pfad und Dateinamen, denn dort musst Du nach der Installation die &quot;ip.dat&quot; wieder hochladen und &uuml;berschreiben; ggf. umbenennen.</p><br />
+  <ol>
+   <li style="margin-bottom:10px;">Lade in dem Ordner, wo deine Webseite ist und auf welcher der Counter zum Einsatz kommen soll, den Ordner &quot;chscore&quot; samt Inhalt hoch. Falls der Ordner bereits existiert, k&ouml;nnen vorhandene Dateien ersetzt werden.</li>
+   <li style="margin-bottom:10px;">Falls noch nicht vorhanden, f&uuml;ge ganz am Anfang deiner Seite (noch vor <code>&lt;html&gt;</code>, <code>&lt;!DOCTYPE [...]</code> oder <code>&lt;?xml [...]</code>) diesen Code ein:<br />
+       <code>&lt;?php include('chscore/CHSCore.php'); ?&gt;</code></li>
+   <li>Rufe danach deine Seite auf und h&auml;nge ein <code>?module=CHSCounterAdmin</code> an die Adresse an. Folge dann den Anweisungen.</li>
+  </ol>
+
+  <h5>Beispiel</h5>
+  <ul>
+   <li style="margin-bottom:10px;">Deine Seite ist:<br />
+       <code>http://www.meineSeite.de/meinOrdner/meineIndex.php</code><br />
+       <span style="font-size:small;">(Hier in die erste Zeile <code>&lt;?php include('chscore/CHSCore.php'); ?&gt;</code> einfügen)</span></li>
+   <li style="margin-bottom:10px;">Dann den Counter hochladen nach:<br />
+       <code>http://www.meineSeite.de/meinOrdner/chscore/</code></li>
+   <li>Und die Installation starten mit:<br />
+       <code>http://www.meineSeite.de/meinOrdner/meineIndex.php?module=CHSCounterAdmin</code></li>
+  </ul><br />
 
   <h4 id="de_update">Update von 3.0 auf 3.1</h4>
-  <p>Sichere dir die Dateien &quot;counter.dat&quot; und, falls vorhanden, &quot;ip.dat&quot; im &quot;chscore/modules/CHSCounter/&quot;-Ordner. L&ouml;sche danach den Ordner &quot;chscore&quot; und installiere die neue Version wie oben beschrieben. Eingef&uuml;gter Code auf deiner Seite braucht dann nicht weiter ver&auml;ndert werden. Lade danach die gesicherten Dateien in den Ordner &quot;chscore/data/&quot; hoch und ersetze die vorhandenen.</p><br />
+  <p>Sichere dir die Dateien &quot;counter.dat&quot; und, falls vorhanden, &quot;ip.dat&quot; im &quot;chscore/modules/CHSCounter/&quot;-Ordner. L&ouml;sche danach den Ordner &quot;chscore&quot; und installiere die neue Version wie oben beschrieben. Eingef&uuml;gter Code auf deiner Seite braucht dann nicht weiter ver&auml;ndert werden. Lade danach die gesicherten Dateien in den Ordner &quot;chscore/data/&quot; hoch und ersetze die vorhandenen.</p>
+
+  <h5>Update von älteren Versionen auf 3.1</h5>
+  <p>Falls Du also eine &auml;ltere Version betreibst, notiere dir den Counterstand und sichere (wenn vorhanden) die &quot;ip.dat&quot;-Datei aus dem &quot;counter&quot;-Ordner. Danach den &quot;counter&quot;-Ordner l&ouml;schen und auch den damals eingef&uuml;gten Code von deiner Seite entfernen. Bei der Installation der 3.Xer kannst Du dann deinen vorhandenen Counterstand wieder eingeben und wenn Du vorher die &quot;ip.dat&quot; gesichert hattest, die Einstellung daf&uuml;r anpassen. Merke dir dabei den angegebenen Pfad und Dateinamen, denn dort musst Du nach der Installation die &quot;ip.dat&quot; wieder hochladen und &uuml;berschreiben; ggf. umbenennen.</p><br />
 
   <h4 id="de_faq">FAQ</h4>
   <ul>
@@ -91,7 +109,23 @@
   </ul><br />
 
   <h4 id="en_install">Installation</h4>
-  <p>Upload in that directory, in which your website is (and you're planning to use the counter), the folder &quot;chscore&quot; including its contents. Point your browser to your website and attach <code>?module=CHSCounterAdmin</code> to the address. Follow the instructions.</p><br />
+  <ol>
+   <li style="margin-bottom:10px;">Upload in that directory, in which your website is (and you're planning to use the counter), the folder &quot;chscore&quot; including its contents. If it already exists, overwrite the files.</li>
+   <li style="margin-bottom:10px;">If not yet present, paste in this code at the very beginning of your site (even before <code>&lt;html&gt;</code>, <code>&lt;!DOCTYPE [...]</code> or <code>&lt;?xml [...]</code>):<br />
+       <code>&lt;?php include('chscore/CHSCore.php'); ?&gt;</code></li>
+   <li style="margin-bottom:10px;">Point your browser to your website and attach <code>?module=CHSCounterAdmin</code> to the address. Follow the instructions.</li>
+  </ol>
+
+  <h5>Example</h5>
+  <ul>
+   <li style="margin-bottom:10px;">Your site is:<br />
+       <code>http://www.mySite.com/myFolder/myIndex.php</code><br />
+       <span style="font-size:small;">(Put in here in the first line <code>&lt;?php include('chscore/CHSCore.php'); ?&gt;</code>)</span></li>
+   <li style="margin-bottom:10px;">Then upload the counter to:<br />
+       <code>http://www.mySite.com/myFolder/chscore/</code></li>
+   <li>And start installation with:<br />
+       <code>http://www.mySite.com/myFolder/myIndex.php?module=CHSCounterAdmin</code></li>
+  </ul><br />
 
   <h4 id="en_update">Update from 3.0 to 3.1</h4>
   <p>Back up the files &quot;counter.dat&quot; and, if present, &quot;ip.dat&quot; from folder &quot;chscore/modules/CHSCounter/&quot;. Delete the folder &quot;chscore&quot; afterwards and install the new version as explained above. Pasted in code on your website doesn't need to be changed again. Finally upload the backed up files to the &quot;chscore/data/&quot; folder and replace the existing ones.</p><br />
