@@ -6,7 +6,7 @@
  * @copyright (c) 2004 - 2010 by Chrissyx
  * @license http://creativecommons.org/licenses/by-nc-sa/3.0/ Creative Commons 3.0 by-nc-sa
  * @package CHS_Counter
- * @version 3.0
+ * @version 3.0.1
  */
 require('../../CHSCore.php');
 Loader::execute('CHSFunctions');
@@ -68,7 +68,7 @@ class CHSCounterAdmin
     $this->chsLanguage->setLangCode($code);
    if(!in_array($this->action, array('login', 'logout', 'admin', 'newpass')))
     $this->action = 'login';
-   $this->curPassHash = @current($passHashes = CHSFunctions::getPHPDataFile(substr($this->curPassFile = current(glob('*.dat.php')), 0, -4)));
+   $this->curPassHash = @current($passHashes = CHSFunctions::getPHPDataFile(substr($this->curPassFile = current(glob('*.dat.php')), 0, -4))) or exit($this->chsLanguage->getString('error_no_user', 'admin'));
    $this->newPassHash = next($passHashes);
   }
  }
@@ -123,20 +123,16 @@ class CHSCounterAdmin
    $settings = Loader::getModule('CHSConfig')->getConfigSet('CHSCounter');
    if(isset($_POST['update']))
    {
-    if(empty($_POST['counterdat']) || $_POST['countpw'] != $_POST['countpw2'])
-    {
-     echo(CHSFunctions::getMsgBox($this->chsLanguage->getString('fill_out_all', 'common'), 'red'));
-     if(empty($_POST['counterdat']))
-      $settings['counter'] .= '" style="border-color:#FF0000;';
-	}
-    elseif(!empty($_POST['backup']) && ($_POST['backup'] < 2 || empty($_POST['email'])))
-    {
-     echo(CHSFunctions::getMsgBox($this->chsLanguage->getString('fill_out_all', 'common'), 'red'));
+    $msg = CHSFunctions::getMsgBox($this->chsLanguage->getString('fill_out_all', 'common'), 'red');
+    if(empty($_POST['counterdat']))
+     $settings['counter'] .= '" style="border-color:#FF0000;';
+    elseif(!empty($_POST['backup']) && $_POST['backup'] < 2)
      $settings['backup'] .= '" style="border-color:#FF0000;';
+    elseif(!empty($_POST['backup']) && (empty($_POST['email']) || !CHSFunctions::isValidMail($_POST['email'])))
      $settings['mail'] .= '" style="border-color:#FF0000;';
-	}
-    else
+    elseif($_POST['countpw'] == $_POST['countpw2'])
     {
+     unset($msg);
      //New language
      if($_POST['lang'] != $settings['lang'] && !$this->chsLanguage->setLangCode($_POST['lang']))
       echo(CHSFunctions::getMsgBox($this->chsLanguage->getString('cant_set_lang', 'admin'), 'yellow'));
@@ -180,6 +176,8 @@ class CHSCounterAdmin
      $settings = Loader::getModule('CHSConfig')->getConfigSet('CHSCounter'); //Reload settings
      echo(CHSFunctions::getMsgBox($this->chsLanguage->getString('new_settings_saved', 'admin'), 'green'));
     }
+    if(isset($msg))
+     echo($msg);
    }
 ?>
 
@@ -246,11 +244,18 @@ foreach($this->chsLanguage->getLangCodes() as $curCode)
    CHSFunctions::printHead('CHS &ndash; Counter: ' . $this->chsLanguage->getString('title', 'install'), 'Counter, CHS, ' . $this->chsLanguage->getString('title', 'install') . ', Chrissyx', $this->chsLanguage->getString('descr', 'install'), $this->chsLanguage->getString('charset', 'common'), $this->chsLanguage->getLangCode());
    if($this->action == 'install')
    {
-    if(!is_numeric($_POST['counter']) || empty($_POST['counterdat']) || empty($_POST['img']) || empty($_POST['countpw']) || $_POST['countpw'] != $_POST['countpw2'])
-     echo(CHSFunctions::getMsgBox($this->chsLanguage->getString('fill_out_all', 'common'), 'red'));
-    elseif(!empty($_POST['backup']) && ($_POST['backup'] < 2 || empty($_POST['email'])))
-     echo(CHSFunctions::getMsgBox($this->chsLanguage->getString('fill_out_all', 'common'), 'red'));
-    else
+    $msg = CHSFunctions::getMsgBox($this->chsLanguage->getString('fill_out_all', 'common'), 'red');
+    if(!is_numeric($_POST['counter']))
+     $_POST['counter'] .= CHSFunctions::$redBorder;
+    elseif(empty($_POST['counterdat']))
+     $_POST['counterdat'] .= CHSFunctions::$redBorder;
+    elseif(!empty($_POST['backup']) && $_POST['backup'] < '2')
+     $_POST['backup'] .= CHSFunctions::$redBorder;
+    elseif(!empty($_POST['backup']) && (empty($_POST['email']) || !CHSFunctions::isValidMail($_POST['email'])))
+     $_POST['email'] .= CHSFunctions::$redBorder;
+    elseif(empty($_POST['countpw']) || $_POST['countpw'] != $_POST['countpw2'])
+     $_POST['countpw'] = $_POST['countpw2'] = ' style="border-color:#FF0000;"';
+    elseif(!empty($_POST['img']))
     {
      Loader::getModule('CHSConfig')->setConfigSet('CHSCounter', array('lang' => '', 'counter' => $_POST['counterdat'], 'backup' => $_POST['backup'], 'mail' => $_POST['email'], 'br' => (isset($_POST['compa']) ? "\n" : "\r\n"), 'ip' => $_POST['ipdat'], 'img' => $_POST['img'] == 'true'));
      file_put_contents('../../../' . $_POST['counterdat'], $_POST['counter']);
@@ -272,6 +277,8 @@ foreach($this->chsLanguage->getLangCodes() as $curCode)
      exit();
 	}
    }
+   if(isset($msg))
+    echo $msg;
    if(phpversion() < '5.1')
     echo(CHSFunctions::getMsgBox(sprintf($this->chsLanguage->getString('warning_php_version', 'install'), PHP_VERSION), 'red'));
 ?>
@@ -288,19 +295,19 @@ foreach($this->chsLanguage->getLangCodes() as $curCode)
   <form action="<?=$_SERVER['PHP_SELF']?>" method="post">
   <table onmouseout="help('<?=$this->chsLanguage->getString('help', 'install')?>');">
    <tr><td colspan="2"></td><td rowspan="14" style="background-color:yellow; width:200px;"><div class="center" id="help"><?=$this->chsLanguage->getString('help', 'install')?></div></td></tr>
-   <tr onmouseover="help('<?=$this->chsLanguage->getString('help1', 'install')?>');"><td><?=$this->chsLanguage->getString('startvalue', 'install')?></td><td><input type="text" name="counter" value="0" size="40" /></td></tr>
-   <tr onmouseover="help('<?=$this->chsLanguage->getString('help2', 'install')?>');"><td><?=$this->chsLanguage->getString('loc_counter', 'admin')?></td><td><input type="text" name="counterdat" value="chscore/modules/CHSCounter/counter.dat" size="40" /></td></tr>
+   <tr onmouseover="help('<?=$this->chsLanguage->getString('help1', 'install')?>');"><td><?=$this->chsLanguage->getString('startvalue', 'install')?></td><td><input type="text" name="counter" value="<?=isset($_POST['counter']) ? $_POST['counter'] : '0'?>" size="40" /></td></tr>
+   <tr onmouseover="help('<?=$this->chsLanguage->getString('help2', 'install')?>');"><td><?=$this->chsLanguage->getString('loc_counter', 'admin')?></td><td><input type="text" name="counterdat" value="<?=isset($_POST['counterdat']) ? $_POST['counterdat'] : 'chscore/modules/CHSCounter/counter.dat'?>" size="40" /></td></tr>
    <tr style="height:5px;"><td colspan="2"></td></tr>
-   <tr onmouseover="help('<?=$this->chsLanguage->getString('help3', 'install')?>');"><td><?=sprintf($this->chsLanguage->getString('mail_hits', 'admin'), '</td><td><input type="text" name="backup" size="35" onfocus="this.value=\'500\';" />')?></td></tr>
-   <tr onmouseover="help('<?=$this->chsLanguage->getString('help4', 'install')?>');"><td><?=$this->chsLanguage->getString('mail_addr', 'admin')?></td><td><input type="text" name="email" size="40" /></td></tr>
-   <tr onmouseover="help('<?=$this->chsLanguage->getString('help5', 'install')?>');"><td><?=$this->chsLanguage->getString('mail_comp', 'admin')?></td><td><input type="checkbox" name="compa" value="true" /></td></tr>
+   <tr onmouseover="help('<?=$this->chsLanguage->getString('help3', 'install')?>');"><td><?=sprintf($this->chsLanguage->getString('mail_hits', 'admin'), '</td><td><input type="text" name="backup" value="' . (isset($_POST['backup']) ? $_POST['backup'] : '') . '" size="35" onfocus="this.value = this.value == \'\' ? \'500\' : this.value;" />')?></td></tr>
+   <tr onmouseover="help('<?=$this->chsLanguage->getString('help4', 'install')?>');"><td><?=$this->chsLanguage->getString('mail_addr', 'admin')?></td><td><input type="text" name="email" value="<?=isset($_POST['email']) ? $_POST['email'] : ''?>" size="40" /></td></tr>
+   <tr onmouseover="help('<?=$this->chsLanguage->getString('help5', 'install')?>');"><td><?=$this->chsLanguage->getString('mail_comp', 'admin')?></td><td><input type="checkbox" name="compa" value="true"<?=isset($_POST['compa']) ? ' checked="checked"' : ''?> /></td></tr>
    <tr style="height:5px;"><td colspan="2"></td></tr>
-   <tr onmouseover="help('<?=$this->chsLanguage->getString('help6', 'install')?>');"><td><?=$this->chsLanguage->getString('password', 'admin')?></td><td><input type="password" name="countpw" size="40" /></td></tr>
-   <tr onmouseover="help('<?=$this->chsLanguage->getString('help7', 'install')?>');"><td><?=$this->chsLanguage->getString('retype_pass', 'admin')?></td><td><input type="password" name="countpw2" size="40" /></td></tr>
+   <tr onmouseover="help('<?=$this->chsLanguage->getString('help6', 'install')?>');"><td><?=$this->chsLanguage->getString('password', 'admin')?></td><td><input type="password" name="countpw" size="40"<?=isset($_POST['countpw']) ? $_POST['countpw'] : ''?> /></td></tr>
+   <tr onmouseover="help('<?=$this->chsLanguage->getString('help7', 'install')?>');"><td><?=$this->chsLanguage->getString('retype_pass', 'admin')?></td><td><input type="password" name="countpw2" size="40"<?=isset($_POST['countpw2']) ? $_POST['countpw2'] : ''?> /></td></tr>
    <tr style="height:5px;"><td colspan="2"></td></tr>
-   <tr onmouseover="help('<?=$this->chsLanguage->getString('help8', 'install')?>');"><td><?=$this->chsLanguage->getString('loc_ip_blocker', 'admin')?></td><td><input type="text" name="ipdat" size="40" onfocus="this.value='chscore/modules/CHSCounter/ip.dat';" /></td></tr>
-   <tr onmouseover="help('<?=$this->chsLanguage->getString('help9', 'install')?>');"><td rowspan="2"><?=$this->chsLanguage->getString('output_counter', 'admin')?></td><td><input type="radio" name="img" value="true" /><?=$this->chsLanguage->getString('as_pic', 'admin')?></td></tr>
-   <tr onmouseover="help('<?=$this->chsLanguage->getString('help9', 'install')?>');"><td><input type="radio" name="img" value="false" checked="checked" /><?=$this->chsLanguage->getString('as_text', 'admin')?></td></tr>
+   <tr onmouseover="help('<?=$this->chsLanguage->getString('help8', 'install')?>');"><td><?=$this->chsLanguage->getString('loc_ip_blocker', 'admin')?></td><td><input type="text" name="ipdat" value="<?=isset($_POST['ipdat']) ? $_POST['ipdat'] : ''?>" size="40" onfocus="this.value = this.value == '' ? 'chscore/modules/CHSCounter/ip.dat' : this.value;" /></td></tr>
+   <tr onmouseover="help('<?=$this->chsLanguage->getString('help9', 'install')?>');"><td rowspan="2"><?=$this->chsLanguage->getString('output_counter', 'admin')?></td><td><input type="radio" name="img" value="true"<?=isset($_POST['img']) && $_POST['img'] == 'true' ? ' checked="checked"' : ''?> /><?=$this->chsLanguage->getString('as_pic', 'admin')?></td></tr>
+   <tr onmouseover="help('<?=$this->chsLanguage->getString('help9', 'install')?>');"><td><input type="radio" name="img" value="false"<?=!isset($_POST['img']) || (isset($_POST['img']) && $_POST['img'] == 'false') ? ' checked="checked"' : ''?> /><?=$this->chsLanguage->getString('as_text', 'admin')?></td></tr>
   </table>
   <input type="submit" value="<?=$this->chsLanguage->getString('install_now', 'install')?>" onmouseover="help('<?=$this->chsLanguage->getString('help10', 'install')?>');" /> <input type="reset" onmouseover="help('<?=$this->chsLanguage->getString('help11', 'install')?>');" />
   <input type="hidden" name="action" value="install" />

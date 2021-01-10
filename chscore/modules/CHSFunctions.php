@@ -1,15 +1,33 @@
 <?php
 /**
- * General functions for each module with initial instructions.
+ * General static functions for each module with initial instructions.
  *
  * @author Chrissyx <chris@chrissyx.com>
  * @copyright (c) 2009, 2010 by Chrissyx
  * @license http://creativecommons.org/licenses/by-nc-sa/3.0/ Creative Commons 3.0 by-nc-sa
  * @package CHS_Core
- * @version 1.0
+ * @version 1.0.2
  */
 class CHSFunctions implements CHSModule
 {
+ /**
+  * Special arranged style-Tag with red border attribute.
+  *
+  * @var string Special style-Tag with red border
+  */
+ public static $redBorder = '" style="border-color:#FF0000;';
+
+ /**
+  * Applies {@link stripslashes()} recursively on arrays as well.
+  *
+  * @param mixed $value Input value(s) to strip backslashes off
+  * @return mixed Input value(s) with backslashes stripped off
+  */
+ private static function stripSlashesDeep($value)
+ {
+  return is_array($value) ? array_map(array('CHSFunctions', 'stripSlashesDeep'), $value) : stripslashes($value);
+ }
+
  /**
   * Some general initial instructions.
   *
@@ -22,6 +40,9 @@ class CHSFunctions implements CHSModule
   //Activate echo short tags
   if(ini_get('short_open_tag') == '0')
    ini_set('short_open_tag', '1');
+  //Revert quoted strings on GPC vars, if needed
+  if(ini_get('magic_quotes_gpc') == '1')
+   list($_GET, $_POST, $_COOKIE) = self::stripSlashesDeep(array($_GET, $_POST, $_COOKIE));
  }
 
  /**
@@ -195,6 +216,17 @@ class CHSFunctions implements CHSModule
  public static function getHash($data)
  {
   return function_exists('hash') ? hash('sha512', $data) : md5($data);
+ }
+
+ /**
+  * Verifies an e-mail address.
+  *
+  * @param mixed $mailAddress The e-mail address to check
+  * @return bool Valid e-mail address
+  */
+ public static function isValidMail($mailAddress)
+ {
+  return (bool) preg_match('/[\.0-9a-z_-]+@[\.0-9a-z-]+\.[a-z]+/si', $mailAddress);
  }
 }
 ?>
