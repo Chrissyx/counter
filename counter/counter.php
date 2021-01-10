@@ -6,59 +6,51 @@
 #http://www.chrissyx.de(.vu)/                                       #
 #####################################################################
 
- $counter = file("counter/counter.dat");
- $backup = trim($counter[1])-1;
- $counter = trim($counter[0])+1;
+//Caching
+if(file_exists('counter/settings.php') && (filemtime('counter/settings.php') > filemtime('counter/settings.dat'))) include('counter/settings.php');
+else
+{
+ //Config: Counter, Backup Mail, Addy, IP Sperre, Bildausgabe
+ list($counterdat, $backup, $mail, $ipdat, $img) = @array_map('trim', file('counter/settings.dat')) or die('<b>ERROR:</b> Keine Einstellungen gefunden!');
+ $temp = fopen('counter/settings.php', 'w');
+ fwrite($temp, "<?php\n //Auto-generated config!\n \$counterdat = '$counterdat';\n \$backup = " . (($backup) ? $backup : "''") . ";\n \$mail = '$mail';\n \$ipdat = '$ipdat';\n \$ips = file(\$ipdat);\n \$img = $img;\n?>");
+ fclose($temp);
+ $ips = file($ipdat);
+ $img = ($img == 'false') ? false : true;
+}
 
- if (file_exists("counter/ip.dat"))
+//Counting
+$counter = file_get_contents($counterdat)+1;
+
+//IP Sperre
+if($ips)
+{
+ $save = false;
+ if(in_array($_SERVER['REMOTE_ADDR'] . "\n", $ips)) $counter--;
+ else
  {
-  $save = false;
-  $temp = fopen("counter/ip.dat", "r");
-  $iparray = fread($temp, filesize("counter/ip.dat"));
+  $ips[] = $_SERVER['REMOTE_ADDR'] . "\n";
+  $temp = fopen($ipdat, 'w');
+  fwrite($temp, implode('', $ips));
   fclose($temp);
-  $iparray = explode("\n", $iparray);
-  if (in_array($_SERVER['REMOTE_ADDR'], $iparray) && file_exists("counter/backup.dat")) $backup++;
-  if (in_array($_SERVER['REMOTE_ADDR'], $iparray)) $counter--;
-  else $save = true;
+  $save = true;
  }
+}
 
- if ($backup <= 0 && file_exists("counter/backup.dat"))
- {
-  $backup = file("counter/backup.dat");
-  $backup = $backup[1];
-  if ($backup > $counter)
-  {
-   $counter = file("counter/backup.dat");
-   $counter = trim($counter[0]);
-  }
-  $temp = fopen("counter/backup.dat", "w");
-  fwrite($temp, $counter . "\n" . $backup);
-  fclose($temp);
- }
+//Backup mailen
+if($backup && (($counter % $backup) == 0)) mail($mail, 'Counter', "Hi,\n\ndeine Website " . $_SERVER['SERVER_NAME'] . " hat so eben $counter Besucher erreicht!\nSollte es zum Crash kommen, kannst Du deinen Counter mit dem oben genannten Wert wieder starten.\n\nSchönen Tag noch,\nDein Counter", 'From: counter@' . $_SERVER['SERVER_NAME'] . "\n" . 'Reply-To: ' . $mail . "\n" . 'X-Mailer: PHP/' . phpversion() . "\n" . 'Content-Type: text/plain; charset=ISO-8859-1' . "\n"); #\r\n ???
 
- if ($bild)
- {
-  settype($counter, "string");
-  $size = strlen($counter);
-  for ($i=0; $i<$size; $i++) echo("<img src=\"counter/" . $counter[$i] . ".png\" alt=\"" . $counter[$i] . "\">");
-  settype($counter, "integer");
- }
- else echo ($counter);
+//Ausgabe
+if($img) foreach(str_split($counter) as $value) echo('<img src="counter/' . $value . '.png" alt="' . $value . '" />');
+else echo($counter);
 
- if (file_exists("counter/ip.dat") && $save)
- {
-  if ($iparray[count($iparray)-1] == "") array_pop($iparray);     
-  $iparray[count($iparray)] = $_SERVER['REMOTE_ADDR'];
-  $temp = fopen("counter/ip.dat", "w");
-  fwrite($temp, implode("\n", $iparray));
-  fclose($temp);
- }
-
- if ($save == true || !isset($save))
- {
-  if (file_exists("counter/backup.dat")) $counter .= "\n" . $backup;
-  $temp = fopen("counter/counter.dat", "w");
-  fwrite($temp, $counter);
-  fclose($temp);
- }
+//Speichern
+if($save || !isset($save))
+{
+ $temp = fopen($counterdat, 'w');
+ flock($temp, LOCK_EX);
+ fwrite($temp, $counter);
+ flock($temp, LOCK_UN);
+ fclose($temp);
+}
 ?>
