@@ -6,7 +6,7 @@
  * @copyright (c) 2004 - 2010 by Chrissyx
  * @license http://creativecommons.org/licenses/by-nc-sa/3.0/ Creative Commons 3.0 by-nc-sa
  * @package CHS_Counter
- * @version 3.0.2
+ * @version 3.1
  */
 class CHSCounter implements CHSModule
 {
@@ -25,6 +25,13 @@ class CHSCounter implements CHSModule
  private $curCounter = 0;
 
  /**
+  * Detected path to images of numbers.
+  *
+  * @var string Path to images of numbers
+  */
+ private $path;
+
+ /**
   * Write a new counter value if IP is not known or mode is set to save every hit.
   *
   * @var bool Write a new counter value
@@ -40,6 +47,7 @@ class CHSCounter implements CHSModule
  {
   if(($this->config = Loader::getModule('CHSConfig')->getConfigSet('CHSCounter')) === false)
    exit(Loader::getModule('CHSLanguage')->getString('error_no_settings', 'counter', 'CHSCounter'));
+  $this->path = Loader::getImagesPath() . 'CHSCounter/';
  }
 
  /**
@@ -67,7 +75,7 @@ class CHSCounter implements CHSModule
   $temp = fopen($this->config['counter'], 'r+');
   flock($temp, LOCK_SH);
   //Counting
-  $this->curCounter = fgets($temp)+1; #file_get_contents($this->config['counter'])+1;
+  $this->curCounter = fgets($temp)+1;
   //Manage IP
   if(!empty($this->config['ip']))
    $this->processIP();
@@ -77,7 +85,7 @@ class CHSCounter implements CHSModule
   //Output
   if($this->config['img'])
    foreach(str_split($this->curCounter) as $value)
-    echo('<img src="chscore/modules/CHSCounter/' . $value . '.png" alt="' . $value . '" />');
+    echo('<img src="' . $this->path . $value . '.png" alt="' . $value . '" />');
   else
    echo($this->curCounter);
   //Save counter

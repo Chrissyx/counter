@@ -71,7 +71,7 @@ class CHSLanguage implements CHSModule
   */
  public function execute()
  {
-  trigger_error('CHSLanguage::execute(): No need to execute this module. Use the getter and setter functions to manage your language strings.', E_USER_NOTICE);
+  trigger_error(__METHOD__ . '(): No need to execute this module. Use the getter and setter functions to manage your language strings.', E_USER_NOTICE);
  }
 
  /**
@@ -125,7 +125,7 @@ class CHSLanguage implements CHSModule
  public function getString($index, $section=null, $module=null, $code=null)
  {
   if(!$this->hasModuleLang(($module = empty($module) ? $this->curModule : $module), ($code = empty($code) ? $this->assignedModLangCodes[$module] : $code)) || (!isset($this->languageStrings[$code][$module]) && !$this->parseFile($module, $code)))
-   return !trigger_error('CHSLanguage::getString(' . $index . ', ' . $section . ', ' . $module . ', ' . $code . '): Identifier not found', E_USER_NOTICE);
+   return !trigger_error(__METHOD__ . '(' . $index . ', ' . $section . ', ' . $module . ', ' . $code . '): Identifier not found', E_USER_NOTICE);
   return isset($this->languageStrings[$code][$module][$section][$index]) ? $this->languageStrings[$code][$module][$section][$index] : (isset($this->languageStrings[$code][$module][$index]) ? $this->languageStrings[$code][$module][$index] : false);
  }
 
@@ -162,9 +162,9 @@ class CHSLanguage implements CHSModule
  private function parseFile($module, $code=null)
  {
   if(!$this->hasModule($module))
-   return !trigger_error('CHSLanguage::parseFile(' . $module . ', ' . $code . '): module does not exist', E_USER_WARNING);
+   return !trigger_error(__METHOD__ . '(' . $module . ', ' . $code . '): module does not exist', E_USER_WARNING);
   if(!empty($code) && !$this->hasModuleLang($module, $code))
-   return !trigger_error('CHSLanguage::parseFile(' . $module . ', ' . $code . '): language code for module does not exist', E_USER_WARNING);
+   return !trigger_error(__METHOD__ . '(' . $module . ', ' . $code . '): language code for module does not exist', E_USER_WARNING);
   //Already parsed?
   if(isset($this->languageStrings[($code = empty($code) ? $this->assignedModLangCodes[$module] : $code)][$module]))
    return true;

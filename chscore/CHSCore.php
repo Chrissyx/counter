@@ -7,10 +7,10 @@
  * @copyright (c) 2009, 2010 by Chrissyx
  * @license http://creativecommons.org/licenses/by-nc-sa/3.0/ Creative Commons 3.0 by-nc-sa
  * @package CHS_Core
- * @version 1.0
+ * @version 1.1
  */
 /**
- * Interface template for every implementing module.
+ * Interface template for every implementing module. Don't forget an onLoad() function by registering for that event.
  *
  * @package CHS_Core
  */
@@ -40,14 +40,28 @@ class CHSCore
  private $availableModules = array();
 
  /**
-  * (Absolute) path to directory of data files.
+  * Relative path to directory of additional config files.
+  * 
+  * @var string Path to configurations
+  */
+ private $configPath;
+
+ /**
+  * Relative path to directory of data files.
   * 
   * @var string Path to data
   */
  private $dataPath;
 
  /**
-  * (Absolute) path to directory of language files.
+  * Relative path to directory of images.
+  * 
+  * @var string Path to images
+  */
+ private $imagePath;
+
+ /**
+  * Relative path to directory of language files.
   * 
   * @var string Path to languages
   */
@@ -62,22 +76,38 @@ class CHSCore
  private $loadedModules = array();
 
  /**
-  * (Absolute) path to directory of modules.
+  * Relative path to directory of modules.
   * 
   * @var string Path to modules
   */
  private $modulesPath;
 
  /**
+  * Modules registered for onLoad action are stored here.
+  *
+  * @see CHSCore::onLoad()
+  * @var array Modules to be notifed
+  */
+ private $onLoadModules = array();
+
+ /**
   * Detects paths and available modules to execute.
   */
  function __construct()
  {
-  $this->dataPath = realpath(($rootDir = dirname(__FILE__) . '/') . 'data/') . DIRECTORY_SEPARATOR;
-  $this->langPath = realpath($rootDir . 'languages/') . DIRECTORY_SEPARATOR;
-  $this->modulesPath = realpath($rootDir . 'modules/') . DIRECTORY_SEPARATOR;
+  $this->configPath = ($rootDir = basename(rtrim(dirname(__FILE__), DIRECTORY_SEPARATOR)) . '/') . 'config/';
+  $this->dataPath = $rootDir . 'data/';
+  $this->imagePath = $rootDir . 'images/';
+  $this->langPath = $rootDir . 'languages/';
+  $this->modulesPath = $rootDir . 'modules/';
   foreach(glob($this->modulesPath . '*.php') as $value)
-   $this->availableModules[] = basename($value, '.php');
+  {
+   $this->availableModules[] = $curModule = basename($value, '.php');
+   //Check for onLoad modules
+   if(file_exists($this->configPath . $curModule . '.ini'))
+    if(@key($curConfig = parse_ini_file($this->configPath . $curModule . '.ini')) == 'notifyOnLoad' && (bool) $curConfig['notifyOnLoad'])
+     $this->onLoadModules[] = $curModule;
+  }
  }
 
  /**
@@ -104,7 +134,17 @@ class CHSCore
  }
 
  /**
-  * Returns absolute path to directory of data files.
+  * Returns relative path to directory of config files.
+  *
+  * @return string Path to config folder
+  */
+ public function getConfigPath()
+ {
+  return $this->configPath;
+ }
+
+ /**
+  * Returns relative path to directory of data files.
   *
   * @return string Path to data folder
   */
@@ -114,7 +154,17 @@ class CHSCore
  }
 
  /**
-  * Returns absolute path to directory of language files.
+  * Returns relative path to directory of images.
+  *
+  * @return string Path to image folder
+  */
+ public function getImagePath()
+ {
+  return $this->imagePath;
+ }
+
+ /**
+  * Returns relative path to directory of language files.
   *
   * @return string Path to language folder
   */
@@ -129,20 +179,20 @@ class CHSCore
   * @param string $module The module to load
   * @return mixed The loaded class or false on failure.
   */
- public function getModule($module)
+ public function &getModule($module)
  {
   //Module is not loaded at all
   if(!isset($this->loadedModules[$module]))
   {
    if(!$this->hasModule($module))
-    return !trigger_error('CHSCore::getModule(' . str_replace('&', '&amp;', $module) . '): module does not exist', E_USER_WARNING);
+    return !trigger_error(__METHOD__ . '(' . str_replace('&', '&amp;', $module) . '): module does not exist', E_USER_WARNING);
    $this->loadedModules[$module]['eval'] = trim(php_strip_whitespace($this->modulesPath . $module . '.php'), '<?ph>'); //Get *pure* code
    eval($this->loadedModules[$module]['eval']);
    if(!class_exists($module, false))
-    return !trigger_error('CHSCore::getModule(' . str_replace('&', '&amp;', $module) . '): module is not a valid class', E_USER_WARNING);
+    return !trigger_error(__METHOD__ . '(' . str_replace('&', '&amp;', $module) . '): module is not a valid class', E_USER_WARNING);
    $class = new $module;
    if(!$class instanceof CHSModule)
-    return !trigger_error('CHSModule::execute(' . str_replace('&', '&amp;', $module) . '): module does not support needed interface', E_USER_WARNING);
+    return !trigger_error(__METHOD__ . '(' . str_replace('&', '&amp;', $module) . '): module does not support needed interface', E_USER_WARNING);
    $this->loadedModules[$module]['class'] = $class;
   }
   //Module was loaded before and serialized, restore it back by letting the script engine know the original class structure
@@ -156,7 +206,7 @@ class CHSCore
  }
 
  /**
-  * Returns absolute path to directory of modules.
+  * Returns relative path to directory of modules.
   *
   * @return string Path to modules folder
   */
@@ -175,10 +225,19 @@ class CHSCore
  {
   return in_array($module, $this->availableModules);
  }
+
+ /**
+  * Notifies registered modules about starting output of HTML
+  */
+ public function onLoad()
+ {
+  foreach($this->onLoadModules as $curModule)
+   $this->getModule($curModule)->onLoad();
+ }
 }
 
 /**
- * Gateway to access the core for modules and their execution of modules.
+ * Gateway to access the core for modules and their execution.
  *
  * @package CHS_Core
  * @see CHSCore
@@ -197,7 +256,18 @@ class Loader
  }
 
  /**
-  * Returns absolute path to directory of data files.
+  * Returns relative path to directory of config files.
+  *
+  * @return string Path to config folder
+  * @see CHSCore::getConfigPath()
+  */
+ public static function getConfigPath()
+ {
+  return $_SESSION['CHSCore']->getConfigPath();
+ }
+
+ /**
+  * Returns relative path to directory of data files.
   *
   * @return string Path to data folder
   * @see CHSCore::getDataPath()
@@ -208,7 +278,18 @@ class Loader
  }
 
  /**
-  * Returns absolute path to directory of language files.
+  * Returns relative path to directory of images.
+  *
+  * @return string Path to image folder
+  * @see CHSCore::getImagePath()
+  */
+ public static function getImagesPath()
+ {
+  return $_SESSION['CHSCore']->getImagePath();
+ }
+
+ /**
+  * Returns relative path to directory of language files.
   *
   * @return string Path to language folder
   * @see CHSCore::getLangPath()
@@ -225,13 +306,13 @@ class Loader
   * @return Loaded module class
   * @see CHSCore::getModule()
   */
- public static function getModule($module)
+ public static function &getModule($module)
  {
   return $_SESSION['CHSCore']->getModule((string) $module);
  }
 
  /**
-  * Returns absolute path to directory of modules.
+  * Returns relative path to directory of modules.
   *
   * @return string Path to modules folder
   * @see CHSCore::getModulesPath()
@@ -247,4 +328,6 @@ if(!isset($_SESSION))
  session_start();
 if(!isset($_SESSION['CHSCore']))
  $_SESSION['CHSCore'] = new CHSCore;
+//Notify regged modules about starting output of HTML
+$_SESSION['CHSCore']->onLoad();
 ?>

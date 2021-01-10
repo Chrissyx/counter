@@ -6,10 +6,17 @@
  * @copyright (c) 2009, 2010 by Chrissyx
  * @license http://creativecommons.org/licenses/by-nc-sa/3.0/ Creative Commons 3.0 by-nc-sa
  * @package CHS_Core
- * @version 1.0.2
+ * @version 1.1
  */
 class CHSFunctions implements CHSModule
 {
+ /**
+  * Cached calculated translation table for internal use.
+  *
+  * @var mixed Translation table
+  */
+ private static $htmlJSDecoder;
+
  /**
   * Special arranged style-Tag with red border attribute.
   *
@@ -31,7 +38,7 @@ class CHSFunctions implements CHSModule
  /**
   * Some general initial instructions.
   *
-  * @see CHSModule::execute()
+  * @see CHSCore::execute()
   */
  public function execute()
  {
@@ -60,7 +67,7 @@ class CHSFunctions implements CHSModule
   * @param string $style Name of used CSS file
   * @see printTail()
   */
- public static function printHead($title, $keywords, $description, $charset='ISO-8859-1', $lang='de', $appendix=null, $headTags=null, $bodyTag=null, $htmlTag=null, $style='style.css')
+ public static function printHead($title, $keywords, $description, $charset='ISO-8859-1', $lang='de', $appendix=null, $headTags=null, $bodyTag=null, $htmlTag=null, $style='chscore/styles/style.css')
  {
   echo('<?xml version="1.0" encoding="' . $charset . '" standalone="no" ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -79,7 +86,7 @@ class CHSFunctions implements CHSModule
   <meta http-equiv="Content-Style-Type" content="text/css" />
   <meta http-equiv="Content-Script-Type" content="text/javascript" />
   <meta http-equiv="X-UA-Compatible" content="IE=8" />
-  <link rel="stylesheet" media="all" href="../../styles/' . $style . '" />
+  <link rel="stylesheet" media="all" href="' . $style . '" />
 ' . ($headTags ? '  ' . $headTags . "\n" : '') . ' </head>
  <body' . $bodyTag . '>
 ' . $appendix);
@@ -197,7 +204,7 @@ class CHSFunctions implements CHSModule
   * 
   * @param string $filename Name of data file
   * @param mixed $contents Single value or array with contents to be written
-  * @return Number of bytes that were written to the file or false on failure
+  * @return int|bool Number of bytes that were written to the file or false on failure
   */
  public static function setPHPDataFile($filename, $contents=array())
  {
@@ -227,6 +234,60 @@ class CHSFunctions implements CHSModule
  public static function isValidMail($mailAddress)
  {
   return (bool) preg_match('/[\.0-9a-z_-]+@[\.0-9a-z-]+\.[a-z]+/si', $mailAddress);
+ }
+
+ /**
+  * Verfies a picture for known / supported extension.
+  * 
+  * @param mixed $filename Name of image file with extension
+  * @return bool Valid / supported image file
+  */
+ public static function isValidPicExt($filename)
+ {
+  return (bool) preg_match("/(.*)\.(jpg|jpeg|gif|png|bmp)/i", $filename);
+ }
+
+ /**
+  * Removes backslashes and converts the common HTML sepecial chars to entities.
+  * 
+  * @param string $string,... The string(s)
+  * @return mixed Edited single string or array with strings
+  */
+ public static function stripEscape($string)
+ {
+  return count($strings = func_get_args()) > 1 ? array_map(create_function('$string', 'return htmlspecialchars(stripslashes($string), ENT_QUOTES);'), $strings) : htmlspecialchars(stripslashes($string), ENT_QUOTES);
+ }
+
+ /**
+  * Unifies an element within an array containing tabular-separated data rows.
+  *
+  * @param mixed $array The array to look the element up
+  * @param mixed $element The element to search for
+  * @param int $index Column position of the element in the data row
+  * @param int $skip Number of rows to skip at the beginning
+  * @return int|bool Position of the element (number of row) or false
+  */
+ public static function unifyElement($array, $element, $index=0, $skip=0)
+ {
+  foreach(array_slice($array, $skip) as $key => $value)
+  {
+   $value = explode("\t", $value);
+   if($value[$index] == $element)
+    return $key+$skip; //Sum skipped rows to current one for proper position
+  }
+  return false;
+ }
+
+ /**
+  * Returns a translation table for the common HTML entities and their unicode hexadecimal representation for JavaScript environments.
+  * Use this decoder to max out user comfort and valid W3C conform code. Cranks up leet level quite high!
+  *
+  * @return mixed Translation table between HTML entities and their JavaScript counterparts
+  */
+ public static function getHTMLJSTransTable()
+ {
+  //Using some lazy singleton design here^^
+  return isset(self::$htmlJSDecoder) ? self::$htmlJSDecoder : (self::$htmlJSDecoder = array_combine(array_keys($temp = array_flip($temp = get_html_translation_table(HTML_SPECIALCHARS, ENT_QUOTES))+array('&#' . (in_array('&#39;', $temp) ? '0' : '') . '39;' => "'", '&apos;' => "'")), array_map(create_function('$string', 'return \'\u00\' . bin2hex($string);'), array_values($temp))));
  }
 }
 ?>

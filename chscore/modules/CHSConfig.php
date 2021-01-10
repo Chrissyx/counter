@@ -45,7 +45,7 @@ class CHSConfig implements CHSModule
   */
  public function execute()
  {
-  trigger_error('CHSConfig::execute(): No need to execute this module. Use the getter and setter functions to manage your config values.', E_USER_NOTICE);
+  trigger_error(__METHOD__ . '(): No need to execute this module. Use the getter and setter functions to manage your config values.', E_USER_NOTICE);
  }
 
  /**

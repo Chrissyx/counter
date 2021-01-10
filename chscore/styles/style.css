@@ -28,6 +28,11 @@ input[type=file]
  background-color:#FFFFFF; /* IE8 fix */
 }
 
+label
+{
+ cursor:pointer;
+}
+
 /* Pseudoklassen */
 
 a:active
