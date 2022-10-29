@@ -3,10 +3,10 @@
  * Admin module for installing and managing the counter.
  *
  * @author Chrissyx <chris@chrissyx.com>
- * @copyright (c) 2004 - 2010 by Chrissyx
+ * @copyright (c) 2004-2022 by Chrissyx
  * @license http://creativecommons.org/licenses/by-nc-sa/3.0/ Creative Commons 3.0 by-nc-sa
  * @package CHS_Counter
- * @version 3.1
+ * @version 3.2
  */
 /**
  * Installs and manages the counter.
@@ -15,80 +15,80 @@
  */
 class CHSCounterAdmin implements CHSModule
 {
- /**
-  * Current performed action.
-  *
-  * @var string Action identifier
-  */
- private $action;
+    /**
+     * Current performed action.
+     *
+     * @var string Action identifier
+     */
+    private $action;
 
- /**
-  * Reference to the {@link CHSLanguage} module.
-  *
-  * @var CHSLanguage {@link CHSLanguage} module
-  */
- private $chsLanguage;
+    /**
+     * Reference to the {@link CHSLanguage} module.
+     *
+     * @var CHSLanguage {@link CHSLanguage} module
+     */
+    private $chsLanguage;
 
- /**
-  * Current file containing the hashed password.
-  *
-  * @var string Name of password file
-  */
- private $curPassFile;
+    /**
+     * Current file containing the hashed password.
+     *
+     * @var string Name of password file
+     */
+    private $curPassFile;
 
- /**
-  * Hashed current user password to access counter ACP.
-  *
-  * @var string|bool Stored hashed user password to compare with.
-  */
- private $curPassHash;
+    /**
+     * Hashed current user password to access counter ACP.
+     *
+     * @var string|bool Stored hashed user password to compare with.
+     */
+    private $curPassHash;
 
- /**
-  * Hash of a possible new requested password, ready to replace current one.
-  *
-  * @var string|bool New hashed password
-  */
- private $newPassHash;
+    /**
+     * Hash of a possible new requested password, ready to replace current one.
+     *
+     * @var string|bool New hashed password
+     */
+    private $newPassHash;
 
- /**
-  * Sets reference to language module.
-  */
- function __construct()
- {
-  $this->chsLanguage = Loader::getModule('CHSLanguage');
- }
+    /**
+     * Sets reference to language module.
+     */
+    function __construct()
+    {
+        $this->chsLanguage = Loader::getModule('CHSLanguage');
+    }
 
- /**
-  * Performs the desired action.
-  *
-  * @see CHSCore::execute()
-  */
- public function execute()
- {
-  switch($this->action)
-  {
+    /**
+     * Performs the desired action.
+     *
+     * @see CHSCore::execute()
+     */
+    public function execute()
+    {
+        switch($this->action)
+        {
 # Login #
-   case 'login':
-   if(isset($_POST['countpw']))
-   {
-    //Check for new pass first
-    if($this->newPassHash && CHSFunctions::getHash($_POST['countpw']) == $this->newPassHash)
-    {
-     $this->curPassHash = $this->newPassHash;
-     CHSFunctions::setPHPDataFile(substr($this->curPassFile, 0, -4), $this->newPassHash);
-    }
-    //Check normal pass now
-    if(CHSFunctions::getHash($_POST['countpw']) == $this->curPassHash)
-    {
-     $_SESSION['countpw'] = CHSFunctions::getHash($_POST['countpw']);
-     unset($_POST['countpw']);
-     @header('Location: ' . $_SERVER['PHP_SELF'] . '?module=CHSCounterAdmin&action=admin');
-     exit($this->chsLanguage->getString('logged_in', 'login') . ' <a href="' . $_SERVER['PHP_SELF'] . '?module=CHSCounterAdmin&amp;action=admin">' . $this->chsLanguage->getString('go_on', 'common') . '</a>');
-    }
-   }
-   CHSFunctions::printHead('CHS &ndash; Counter: ' . $this->chsLanguage->getString('title', 'login'), 'Counter, CHS, ' . $this->chsLanguage->getString('title', 'login') . ', Chrissyx', $this->chsLanguage->getString('descr', 'login'), $this->chsLanguage->getString('charset', 'common'), $this->chsLanguage->getLangCode());
-   if(isset($_POST['countpw']))
-    echo(CHSFunctions::getMsgBox($this->chsLanguage->getString('wrong_pass', 'login'), 'red'));
+            case 'login':
+            if(isset($_POST['countpw']))
+            {
+                //Check for new pass first
+                if($this->newPassHash && CHSFunctions::getHash($_POST['countpw']) == $this->newPassHash)
+                {
+                    $this->curPassHash = $this->newPassHash;
+                    CHSFunctions::setPHPDataFile(substr($this->curPassFile, 0, -4), $this->newPassHash);
+                }
+                //Check normal pass now
+                if(CHSFunctions::getHash($_POST['countpw']) == $this->curPassHash)
+                {
+                    $_SESSION['countpw'] = CHSFunctions::getHash($_POST['countpw']);
+                    unset($_POST['countpw']);
+                    @header('Location: ' . $_SERVER['PHP_SELF'] . '?module=CHSCounterAdmin&action=admin');
+                    exit($this->chsLanguage->getString('logged_in', 'login') . ' <a href="' . $_SERVER['PHP_SELF'] . '?module=CHSCounterAdmin&amp;action=admin">' . $this->chsLanguage->getString('go_on', 'common') . '</a>');
+                }
+            }
+            CHSFunctions::printHead('CHS &ndash; Counter: ' . $this->chsLanguage->getString('title', 'login'), 'Counter, CHS, ' . $this->chsLanguage->getString('title', 'login') . ', Chrissyx', $this->chsLanguage->getString('descr', 'login'), $this->chsLanguage->getString('charset', 'common'), $this->chsLanguage->getLangCode());
+            if(isset($_POST['countpw']))
+                echo(CHSFunctions::getMsgBox($this->chsLanguage->getString('wrong_pass', 'login'), 'red'));
 ?>
 
   <h3>CHS &ndash; Counter: <?=$this->chsLanguage->getString('title', 'login')?></h3>
@@ -99,73 +99,79 @@ class CHSCounterAdmin implements CHSModule
   </form>
 
 <?php
-   CHSFunctions::printTail('CHSCounter', 'common');
-   break;
+            CHSFunctions::printTail('CHSCounter', 'common');
+            break;
 
 # Administration #
-   case 'admin':
-   if(!isset($_SESSION['countpw']) || $_SESSION['countpw'] != $this->curPassHash)
-    exit($this->chsLanguage->getString('error_not_allowed', 'admin'));
-   CHSFunctions::printHead('CHS &ndash; Counter: ' . $this->chsLanguage->getString('title', 'admin'), 'Counter, CHS, ' . $this->chsLanguage->getString('title', 'admin') . ', Chrissyx', $this->chsLanguage->getString('descr', 'admin'), $this->chsLanguage->getString('charset', 'common'), $this->chsLanguage->getLangCode());
-   $settings = Loader::getModule('CHSConfig')->getConfigSet('CHSCounter');
-   if(isset($_POST['update']))
-   {
-    $msg = CHSFunctions::getMsgBox($this->chsLanguage->getString('fill_out_all', 'common'), 'red');
-    if(empty($_POST['counterdat']))
-     $settings['counter'] .= '" style="border-color:#FF0000;';
-    elseif(!empty($_POST['backup']) && $_POST['backup'] < 2)
-     $settings['backup'] .= '" style="border-color:#FF0000;';
-    elseif(!empty($_POST['backup']) && (empty($_POST['email']) || !CHSFunctions::isValidMail($_POST['email'])))
-     $settings['mail'] .= '" style="border-color:#FF0000;';
-    elseif($_POST['countpw'] == $_POST['countpw2'])
-    {
-     unset($msg);
-     //New language
-     if($_POST['lang'] != $settings['lang'] && !$this->chsLanguage->setLangCode($_POST['lang']))
-      echo(CHSFunctions::getMsgBox($this->chsLanguage->getString('cant_set_lang', 'admin'), 'yellow'));
-     //New password
-     if(!empty($_POST['countpw']))
-     {
-      $_SESSION['countpw'] = CHSFunctions::getHash($_POST['countpw']);
-      unlink($this->curPassFile); //Delete old and create new pass file
-      CHSFunctions::setPHPDataFile($this->curPassFile = Loader::getDataPath() . md5(time()) . 'CHSCounter.dat', $_SESSION['countpw']);
-     }
-     //New counter value
-     if(is_numeric($_POST['counter']))
-     {
-      $temp = fopen($settings['counter'], 'w');
-      while(!flock($temp, LOCK_EX | LOCK_NB))
-       usleep(mt_rand(1, 100)*1000); //Wait between 1 to 100 millisecs to get lock
-      fwrite($temp, $_POST['counter']);
-      flock($temp, LOCK_UN);
-      fclose($temp);
-     }
-     //New counter file
-     if($_POST['counterdat'] != $settings['counter'])
-     {
-      rename($settings['counter'], $_POST['counterdat']) or $_POST['counterdat'] = $settings['counter'];
-      if($_POST['counterdat'] == $settings['counter'])
-      {
-       echo(CHSFunctions::getMsgBox($this->chsLanguage->getString('cant_rename_file', 'admin'), 'yellow'));
-       $settings['counter'] .= '" style="border-color:#FFFF00;';
-	  }
-	 }
-     //Manage IPs
-     if($_POST['ipdat'] != $settings['ip'])
-     {
-      if(empty($_POST['ipdat']) && file_exists($settings['ip']))
-       unlink($settings['ip']);
-      else
-       file_exists($settings['ip']) && !is_dir($settings['ip']) ? rename($settings['ip'], $_POST['ipdat']) : file_put_contents($_POST['ipdat'], $_SERVER['REMOTE_ADDR'] . "\n");
-     }
-     //Save settings
-     Loader::getModule('CHSConfig')->setConfigSet('CHSCounter', array('lang' => $_POST['lang'], 'counter' => $_POST['counterdat'], 'backup' => $_POST['backup'], 'mail' => $_POST['email'], 'br' => (isset($_POST['compa']) ? "\n" : "\r\n"), 'ip' => $_POST['ipdat'], 'img' => $_POST['img'] == 'true'));
-     $settings = Loader::getModule('CHSConfig')->getConfigSet('CHSCounter'); //Reload settings
-     echo(CHSFunctions::getMsgBox($this->chsLanguage->getString('new_settings_saved', 'admin'), 'green'));
-    }
-    if(isset($msg))
-     echo($msg);
-   }
+            case 'admin':
+            if(!isset($_SESSION['countpw']) || $_SESSION['countpw'] != $this->curPassHash)
+                exit($this->chsLanguage->getString('error_not_allowed', 'admin'));
+            CHSFunctions::printHead('CHS &ndash; Counter: ' . $this->chsLanguage->getString('title', 'admin'), 'Counter, CHS, ' . $this->chsLanguage->getString('title', 'admin') . ', Chrissyx', $this->chsLanguage->getString('descr', 'admin'), $this->chsLanguage->getString('charset', 'common'), $this->chsLanguage->getLangCode());
+            $settings = Loader::getModule('CHSConfig')->getConfigSet('CHSCounter');
+            if(isset($_POST['update']))
+            {
+                $msg = CHSFunctions::getMsgBox($this->chsLanguage->getString('fill_out_all', 'common'), 'red');
+                if(empty($_POST['counterdat']))
+                    $settings['counter'] .= '" style="border-color:#FF0000;';
+                elseif(!empty($_POST['backup']) && $_POST['backup'] < 2)
+                    $settings['backup'] .= '" style="border-color:#FF0000;';
+                elseif(!empty($_POST['backup']) && (empty($_POST['email']) || !CHSFunctions::isValidMail($_POST['email'])))
+                    $settings['mail'] .= '" style="border-color:#FF0000;';
+                elseif($_POST['countpw'] == $_POST['countpw2'])
+                {
+                    unset($msg);
+                    //New language
+                    if($_POST['lang'] != $settings['lang'] && !$this->chsLanguage->setLangCode($_POST['lang']))
+                        echo(CHSFunctions::getMsgBox($this->chsLanguage->getString('cant_set_lang', 'admin'), 'yellow'));
+                    //New password
+                    if(!empty($_POST['countpw']))
+                    {
+                        $_SESSION['countpw'] = CHSFunctions::getHash($_POST['countpw']);
+                        unlink($this->curPassFile); //Delete old and create new pass file
+                        CHSFunctions::setPHPDataFile($this->curPassFile = Loader::getDataPath() . md5(time()) . 'CHSCounter.dat', $_SESSION['countpw']);
+                    }
+                    //New counter value
+                    if(is_numeric($_POST['counter']))
+                    {
+                        $temp = fopen($settings['counter'], 'w');
+                        while(!flock($temp, LOCK_EX | LOCK_NB))
+                            usleep(mt_rand(1, 100) * 1000); //Wait between 1 to 100 millisecs to get lock
+                        fwrite($temp, $_POST['counter']);
+                        flock($temp, LOCK_UN);
+                        fclose($temp);
+                    }
+                    //New counter file
+                    if($_POST['counterdat'] != $settings['counter'])
+                    {
+                        rename($settings['counter'], $_POST['counterdat']) or $_POST['counterdat'] = $settings['counter'];
+                        if($_POST['counterdat'] == $settings['counter'])
+                        {
+                            echo(CHSFunctions::getMsgBox($this->chsLanguage->getString('cant_rename_file', 'admin'), 'yellow'));
+                            $settings['counter'] .= '" style="border-color:#FFFF00;';
+                        }
+                    }
+                    //Manage IPs
+                    if($_POST['ipdat'] != $settings['ip'])
+                    {
+                        if(empty($_POST['ipdat']) && file_exists($settings['ip']))
+                            unlink($settings['ip']);
+                        else
+                            file_exists($settings['ip']) && !is_dir($settings['ip']) ? rename($settings['ip'], $_POST['ipdat']) : file_put_contents($_POST['ipdat'], $_SERVER['REMOTE_ADDR'] . "\n");
+                    }
+                    //Save settings
+                    Loader::getModule('CHSConfig')->setConfigSet('CHSCounter', array('lang' => $_POST['lang'],
+                        'counter' => $_POST['counterdat'],
+                        'backup' => $_POST['backup'],
+                        'mail' => $_POST['email'],
+                        'br' => (isset($_POST['compa']) ? "\n" : "\r\n"),
+                        'ip' => $_POST['ipdat'],
+                        'img' => $_POST['img'] == 'true'));
+                    $settings = Loader::getModule('CHSConfig')->getConfigSet('CHSCounter'); //Reload settings
+                    echo(CHSFunctions::getMsgBox($this->chsLanguage->getString('new_settings_saved', 'admin'), 'green'));
+                }
+                if(isset($msg))
+                    echo($msg);
+            }
 ?>
 
   <h3>CHS &ndash; Counter: <?=$this->chsLanguage->getString('title', 'admin')?></h3>
@@ -199,57 +205,63 @@ foreach($this->chsLanguage->getLangCodes() as $curCode)
   </form>
 
 <?php
-   CHSFunctions::printTail('CHSCounter', 'common');
-   break;
+            CHSFunctions::printTail('CHSCounter', 'common');
+            break;
 
 # Logout #
-   case 'logout':
-   session_unset(); //Kill off whole session to re-init the Core to avoid caching issues
-   @header('Location: ' . $_SERVER['PHP_SELF'] . '?module=CHSCounterAdmin');
-   exit($this->chsLanguage->getString('logged_out', 'logout') . ' <a href="' . $_SERVER['PHP_SELF'] . '">' . $this->chsLanguage->getString('go_on', 'common') . '</a>');
-   break;
+            case 'logout':
+            session_unset(); //Kill off whole session to re-init the Core to avoid caching issues
+            @header('Location: ' . $_SERVER['PHP_SELF'] . '?module=CHSCounterAdmin');
+            exit($this->chsLanguage->getString('logged_out', 'logout') . ' <a href="' . $_SERVER['PHP_SELF'] . '">' . $this->chsLanguage->getString('go_on', 'common') . '</a>');
+            break;
 
 # New password #
-   case 'newpass':
-   CHSFunctions::printHead('CHS &ndash; Counter: ' . $this->chsLanguage->getString('title', 'newpass'), 'Counter, CHS, ' . $this->chsLanguage->getString('title', 'newpass') . ', Chrissyx', $this->chsLanguage->getString('descr', 'newpass'), $this->chsLanguage->getString('charset', 'common'), $this->chsLanguage->getLangCode());
-   $settings = Loader::getModule('CHSConfig')->getConfigSet('CHSCounter');
-   if(empty($settings['mail']))
-    echo(CHSFunctions::getMsgBox($this->chsLanguage->getString('no_addr_given', 'newpass'), 'yellow'));
-   else
-   {
-    for($i=0,$newPass=''; $i<10; $i++)
-     $newPass .= chr(mt_rand(33, 126));
-    CHSFunctions::setPHPDataFile(substr($this->curPassFile, 0, -4), array($this->curPassHash, CHSFunctions::getHash($newPass)));
-    echo(mail($settings['mail'], str_replace('www.', '', $_SERVER['SERVER_NAME']) . ' Counter: ' . $this->chsLanguage->getString('title', 'newpass'), sprintf($this->chsLanguage->getString('mail_text', 'newpass'), $_SERVER['REMOTE_ADDR'], $_SERVER['SERVER_NAME'], $newPass), 'From: counter@' . str_replace('www.', '', $_SERVER['SERVER_NAME']) . $settings['br'] . 'Reply-To: ' . $settings['mail'] . $settings['br'] . 'X-Mailer: PHP/' . phpversion() . $settings['br'] . 'Content-Type: text/plain; charset=' . $this->chsLanguage->getString('charset', 'common')) ? CHSFunctions::getMsgBox($this->chsLanguage->getString('mail_sent', 'newpass'), 'green') : CHSFunctions::getMsgBox($this->chsLanguage->getString('mail_not_sent', 'newpass'), 'red'));
-   }
-   CHSFunctions::printTail('CHSCounter', 'common');
-   break;
+            case 'newpass':
+            CHSFunctions::printHead('CHS &ndash; Counter: ' . $this->chsLanguage->getString('title', 'newpass'), 'Counter, CHS, ' . $this->chsLanguage->getString('title', 'newpass') . ', Chrissyx', $this->chsLanguage->getString('descr', 'newpass'), $this->chsLanguage->getString('charset', 'common'), $this->chsLanguage->getLangCode());
+            $settings = Loader::getModule('CHSConfig')->getConfigSet('CHSCounter');
+            if(empty($settings['mail']))
+                echo(CHSFunctions::getMsgBox($this->chsLanguage->getString('no_addr_given', 'newpass'), 'yellow'));
+            else
+            {
+                for($i=0,$newPass=''; $i<10; $i++)
+                    $newPass .= chr(mt_rand(33, 126));
+                CHSFunctions::setPHPDataFile(substr($this->curPassFile, 0, -4), array($this->curPassHash, CHSFunctions::getHash($newPass)));
+                echo(mail($settings['mail'], str_replace('www.', '', $_SERVER['SERVER_NAME']) . ' Counter: ' . $this->chsLanguage->getString('title', 'newpass'), sprintf($this->chsLanguage->getString('mail_text', 'newpass'), $_SERVER['REMOTE_ADDR'], $_SERVER['SERVER_NAME'], $newPass), 'From: counter@' . str_replace('www.', '', $_SERVER['SERVER_NAME']) . $settings['br'] . 'Reply-To: ' . $settings['mail'] . $settings['br'] . 'X-Mailer: PHP/' . phpversion() . $settings['br'] . 'Content-Type: text/plain; charset=' . $this->chsLanguage->getString('charset', 'common')) ? CHSFunctions::getMsgBox($this->chsLanguage->getString('mail_sent', 'newpass'), 'green') : CHSFunctions::getMsgBox($this->chsLanguage->getString('mail_not_sent', 'newpass'), 'red'));
+            }
+            CHSFunctions::printTail('CHSCounter', 'common');
+            break;
 
 # Installation #
-   case 'install':
-   default:
-   CHSFunctions::printHead('CHS &ndash; Counter: ' . $this->chsLanguage->getString('title', 'install'), 'Counter, CHS, ' . $this->chsLanguage->getString('title', 'install') . ', Chrissyx', $this->chsLanguage->getString('descr', 'install'), $this->chsLanguage->getString('charset', 'common'), $this->chsLanguage->getLangCode());
-   if($this->action == 'install')
-   {
-    $msg = CHSFunctions::getMsgBox($this->chsLanguage->getString('fill_out_all', 'common'), 'red');
-    if(!is_numeric($_POST['counter']))
-     $_POST['counter'] .= CHSFunctions::$redBorder;
-    elseif(empty($_POST['counterdat']))
-     $_POST['counterdat'] .= CHSFunctions::$redBorder;
-    elseif(!empty($_POST['backup']) && $_POST['backup'] < '2')
-     $_POST['backup'] .= CHSFunctions::$redBorder;
-    elseif(!empty($_POST['backup']) && (empty($_POST['email']) || !CHSFunctions::isValidMail($_POST['email'])))
-     $_POST['email'] .= CHSFunctions::$redBorder;
-    elseif(empty($_POST['countpw']) || $_POST['countpw'] != $_POST['countpw2'])
-     $_POST['countpw'] = $_POST['countpw2'] = ' style="border-color:#FF0000;"';
-    elseif(!empty($_POST['img']))
-    {
-     Loader::getModule('CHSConfig')->setConfigSet('CHSCounter', array('lang' => '', 'counter' => $_POST['counterdat'], 'backup' => $_POST['backup'], 'mail' => $_POST['email'], 'br' => (isset($_POST['compa']) ? "\n" : "\r\n"), 'ip' => $_POST['ipdat'], 'img' => $_POST['img'] == 'true'));
-     file_put_contents($_POST['counterdat'], $_POST['counter']);
-     if(!empty($_POST['ipdat']))
-      file_put_contents($_POST['ipdat'], $_SERVER['REMOTE_ADDR'] . "\n");
-     CHSFunctions::setPHPDataFile(Loader::getDataPath() . md5(time()) . 'CHSCounter.dat', CHSFunctions::getHash($_POST['countpw']));
-     echo(CHSFunctions::getMsgBox($this->chsLanguage->getString('install_finished', 'install'), 'green'));
+            case 'install':
+            default:
+            CHSFunctions::printHead('CHS &ndash; Counter: ' . $this->chsLanguage->getString('title', 'install'), 'Counter, CHS, ' . $this->chsLanguage->getString('title', 'install') . ', Chrissyx', $this->chsLanguage->getString('descr', 'install'), $this->chsLanguage->getString('charset', 'common'), $this->chsLanguage->getLangCode());
+            if($this->action == 'install')
+            {
+                $msg = CHSFunctions::getMsgBox($this->chsLanguage->getString('fill_out_all', 'common'), 'red');
+                if(!is_numeric($_POST['counter']))
+                    $_POST['counter'] .= CHSFunctions::$redBorder;
+                elseif(empty($_POST['counterdat']))
+                    $_POST['counterdat'] .= CHSFunctions::$redBorder;
+                elseif(!empty($_POST['backup']) && $_POST['backup'] < '2')
+                    $_POST['backup'] .= CHSFunctions::$redBorder;
+                elseif(!empty($_POST['backup']) && (empty($_POST['email']) || !CHSFunctions::isValidMail($_POST['email'])))
+                    $_POST['email'] .= CHSFunctions::$redBorder;
+                elseif(empty($_POST['countpw']) || $_POST['countpw'] != $_POST['countpw2'])
+                    $_POST['countpw'] = $_POST['countpw2'] = ' style="border-color:#FF0000;"';
+                elseif(!empty($_POST['img']))
+                {
+                    Loader::getModule('CHSConfig')->setConfigSet('CHSCounter', array('lang' => '',
+                        'counter' => $_POST['counterdat'],
+                        'backup' => $_POST['backup'],
+                        'mail' => $_POST['email'],
+                        'br' => (isset($_POST['compa']) ? "\n" : "\r\n"),
+                        'ip' => $_POST['ipdat'],
+                        'img' => $_POST['img'] == 'true'));
+                    file_put_contents($_POST['counterdat'], $_POST['counter']);
+                    if(!empty($_POST['ipdat']))
+                        file_put_contents($_POST['ipdat'], $_SERVER['REMOTE_ADDR'] . "\n");
+                    CHSFunctions::setPHPDataFile(Loader::getDataPath() . md5(time()) . 'CHSCounter.dat', CHSFunctions::getHash($_POST['countpw']));
+                    echo(CHSFunctions::getMsgBox($this->chsLanguage->getString('install_finished', 'install'), 'green'));
 ?>
 
   <p><?=$this->chsLanguage->getString('note1', 'install')?></p>
@@ -260,13 +272,13 @@ foreach($this->chsLanguage->getLangCodes() as $curCode)
   <p><a href="http://<?=$_SERVER['SERVER_NAME']?>/"><?=$this->chsLanguage->getString('goto1', 'install')?></a> &ndash; <a href="<?=$_SERVER['PHP_SELF']?>?module=CHSCounterAdmin"><?=$this->chsLanguage->getString('goto2', 'install')?></a></p>
 
 <?php
-     exit(CHSFunctions::printTail('CHSCounter', 'common'));
-	}
-   }
-   if(isset($msg))
-    echo $msg;
-   if(phpversion() < '5.1')
-    echo(CHSFunctions::getMsgBox(sprintf($this->chsLanguage->getString('warning_php_version', 'install'), PHP_VERSION), 'red'));
+                    exit(CHSFunctions::printTail('CHSCounter', 'common'));
+                }
+            }
+            if(isset($msg))
+                echo $msg;
+            if(phpversion() < '5.3')
+                echo(CHSFunctions::getMsgBox(sprintf($this->chsLanguage->getString('warning_php_version', 'install'), PHP_VERSION), 'red'));
 ?>
 
   <script type="text/javascript">
@@ -300,37 +312,37 @@ foreach($this->chsLanguage->getLangCodes() as $curCode)
   </form>
 
 <?php
-   CHSFunctions::printTail('CHSCounter', 'common');
-   break;
-  }
- }
+            CHSFunctions::printTail('CHSCounter', 'common');
+            break;
+        }
+    }
 
- /**
-  * Detects valid user action and prepares password hashes.
-  *
-  * @see CHSCore::onLoad()
-  */
- public function onLoad()
- {
-  if(isset($_GET['module']) && $_GET['module'] == get_class())
-  {
-   Loader::execute('CHSFunctions');
-   $this->action = isset($_GET['action']) ? $_GET['action'] : (isset($_POST['action']) ? $_POST['action'] : '');
-   //Update reference to lang module
-   $this->chsLanguage = Loader::getModule('CHSLanguage');
-   if(!$this->chsLanguage->setModule('CHSCounter')) //Set shortcut
-    trigger_error(__METHOD__ . '(): Cannot set module name as shortcut', E_USER_WARNING);
-   if(Loader::getModule('CHSConfig')->hasConfigSet('CHSCounter'))
-   {
-    if(($code = Loader::getModule('CHSConfig')->getConfigValue('CHSCounter', 'lang')) != '')
-     $this->chsLanguage->setLangCode($code);
-    if(!in_array($this->action, array('login', 'logout', 'admin', 'newpass')))
-     $this->action = 'login';
-    $this->curPassHash = @current($passHashes = CHSFunctions::getPHPDataFile(substr($this->curPassFile = current(glob(Loader::getDataPath() . '*CHSCounter.dat.php')), 0, -4))) or exit($this->chsLanguage->getString('error_no_user', 'admin'));
-    $this->newPassHash = next($passHashes);
-   }
-   exit($this->execute());
-  }
- }
+    /**
+     * Detects valid user action and prepares password hashes.
+     *
+     * @see CHSCore::onLoad()
+     */
+    public function onLoad()
+    {
+        if(isset($_GET['module']) && $_GET['module'] == get_class())
+        {
+            Loader::execute('CHSFunctions');
+            $this->action = isset($_GET['action']) ? $_GET['action'] : (isset($_POST['action']) ? $_POST['action'] : '');
+            //Update reference to lang module
+            $this->chsLanguage = Loader::getModule('CHSLanguage');
+            if(!$this->chsLanguage->setModule('CHSCounter')) //Set shortcut
+                trigger_error(__METHOD__ . '(): Cannot set module name as shortcut', E_USER_WARNING);
+            if(Loader::getModule('CHSConfig')->hasConfigSet('CHSCounter'))
+            {
+                if(($code = Loader::getModule('CHSConfig')->getConfigValue('CHSCounter', 'lang')) != '')
+                    $this->chsLanguage->setLangCode($code);
+                if(!in_array($this->action, array('login', 'logout', 'admin', 'newpass')))
+                    $this->action = 'login';
+                $this->curPassHash = @current($passHashes = CHSFunctions::getPHPDataFile(substr($this->curPassFile = current(glob(Loader::getDataPath() . '*CHSCounter.dat.php')), 0, -4))) or exit($this->chsLanguage->getString('error_no_user', 'admin'));
+                $this->newPassHash = next($passHashes);
+            }
+            exit($this->execute());
+        }
+    }
 }
 ?>
