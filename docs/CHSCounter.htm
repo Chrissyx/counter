@@ -26,7 +26,7 @@
    <li><a href="#de_intro">Vorwort</a></li>
    <li><a href="#de_reqs">Vorraussetzungen</a></li>
    <li><a href="#de_install">Installation</a></li>
-   <li><a href="#de_update">Update auf 3.1</a></li>
+   <li><a href="#de_update">Update</a></li>
    <li><a href="#de_faq">FAQ</a></li>
    <li><a href="#de_credits">Credits</a></li>
   </ul><br />
@@ -51,19 +51,23 @@
   <h5>Beispiel</h5>
   <ul>
    <li style="margin-bottom:10px;">Deine Seite ist:<br />
-       <code>http://www.meineSeite.de/meinOrdner/meineIndex.php</code><br />
+       <code>https://www.meineSeite.de/meinOrdner/meineIndex.php</code><br />
        <span style="font-size:small;">(Hier in die erste Zeile <code>&lt;?php include('chscore/CHSCore.php'); ?&gt;</code> einfügen)</span></li>
    <li style="margin-bottom:10px;">Dann den Counter hochladen nach:<br />
-       <code>http://www.meineSeite.de/meinOrdner/chscore/</code></li>
+       <code>https://www.meineSeite.de/meinOrdner/chscore/</code></li>
    <li>Und die Installation starten mit:<br />
-       <code>http://www.meineSeite.de/meinOrdner/meineIndex.php?module=CHSCounterAdmin</code></li>
+       <code>https://www.meineSeite.de/meinOrdner/meineIndex.php?module=CHSCounterAdmin</code></li>
   </ul><br />
 
-  <h4 id="de_update">Update von 3.0 auf 3.1</h4>
+  <h4 id="de_update">Update</h4>
+  <h5>Update von 3.1 auf 3.2</h5>
+  <p>Lade den Ordner &quot;chscore&quot; samt Inhalt hoch und ersetze so die jeweils vorhandenen Dateien.</p>
+
+  <h5>Update von 3.0 auf 3.2</h5>
   <p>Sichere dir die Dateien &quot;counter.dat&quot; und, falls vorhanden, &quot;ip.dat&quot; im &quot;chscore/modules/CHSCounter/&quot;-Ordner. L&ouml;sche danach den Ordner &quot;chscore&quot; und installiere die neue Version wie oben beschrieben. Eingef&uuml;gter Code auf deiner Seite braucht dann nicht weiter ver&auml;ndert werden. Lade danach die gesicherten Dateien in den Ordner &quot;chscore/data/&quot; hoch und ersetze die vorhandenen.</p>
 
-  <h5>Update von älteren Versionen auf 3.1</h5>
-  <p>Falls Du also eine &auml;ltere Version betreibst, notiere dir den Counterstand und sichere (wenn vorhanden) die &quot;ip.dat&quot;-Datei aus dem &quot;counter&quot;-Ordner. Danach den &quot;counter&quot;-Ordner l&ouml;schen und auch den damals eingef&uuml;gten Code von deiner Seite entfernen. Bei der Installation der 3.Xer kannst Du dann deinen vorhandenen Counterstand wieder eingeben und wenn Du vorher die &quot;ip.dat&quot; gesichert hattest, die Einstellung daf&uuml;r anpassen. Merke dir dabei den angegebenen Pfad und Dateinamen, denn dort musst Du nach der Installation die &quot;ip.dat&quot; wieder hochladen und &uuml;berschreiben; ggf. umbenennen.</p><br />
+  <h5>Update von älteren Versionen auf 3.2</h5>
+  <p>Falls Du also eine &auml;ltere Version betreibst, notiere dir den Counterstand und sichere (wenn vorhanden) die &quot;ip.dat&quot;-Datei aus dem &quot;counter&quot;-Ordner. Danach den &quot;counter&quot;-Ordner l&ouml;schen und auch den damals eingef&uuml;gten Code von deiner Seite entfernen. Bei der Installation der 3er kannst Du dann deinen vorhandenen Counterstand wieder eingeben und wenn Du vorher die &quot;ip.dat&quot; gesichert hattest, die Einstellung daf&uuml;r anpassen. Merke dir dabei den angegebenen Pfad und Dateinamen, denn dort musst Du nach der Installation die &quot;ip.dat&quot; wieder hochladen und &uuml;berschreiben; ggf. umbenennen.</p><br />
 
   <h4 id="de_faq">FAQ</h4>
   <ul>
@@ -95,12 +99,16 @@
 
   <h4>Content</h4>
   <ul>
+   <li><a href="#en_intro">Introduction</a></li>
    <li><a href="#en_reqs">Requirements</a></li>
    <li><a href="#en_install">Installation</a></li>
-   <li><a href="#en_update">Update from 3.0 to 3.1</a></li>
+   <li><a href="#en_update">Update</a></li>
    <li><a href="#en_faq">FAQ</a></li>
    <li><a href="#en_credits">Credits</a></li>
   </ul><br />
+
+  <h4 id="en_intro">Introduction</h4>
+  <p>More than a simple counter, this one has additional features and a multilingual administration panel. Starting there everything is configurable, from the type of output up to storage locations of the internal system files; cached settings are renewed automatically and immediately active after logout. The optional backup possibility can be set to send the current value by email after each certain amount of hits. By using the optional IP blocker the script is operating as a true visitor counter or just as a simple hit counter.</p><br />
 
   <h4 id="en_reqs">Requirements</h4>
   <ul>
@@ -119,15 +127,19 @@
   <h5>Example</h5>
   <ul>
    <li style="margin-bottom:10px;">Your site is:<br />
-       <code>http://www.mySite.com/myFolder/myIndex.php</code><br />
+       <code>https://www.mySite.com/myFolder/myIndex.php</code><br />
        <span style="font-size:small;">(Put in here in the first line <code>&lt;?php include('chscore/CHSCore.php'); ?&gt;</code>)</span></li>
    <li style="margin-bottom:10px;">Then upload the counter to:<br />
-       <code>http://www.mySite.com/myFolder/chscore/</code></li>
+       <code>https://www.mySite.com/myFolder/chscore/</code></li>
    <li>And start installation with:<br />
-       <code>http://www.mySite.com/myFolder/myIndex.php?module=CHSCounterAdmin</code></li>
+       <code>https://www.mySite.com/myFolder/myIndex.php?module=CHSCounterAdmin</code></li>
   </ul><br />
 
-  <h4 id="en_update">Update from 3.0 to 3.1</h4>
+  <h4 id="en_update">Update</h4>
+  <h5>Update from 3.1 to 3.2</h5>
+  <p>Upload the folder &quot;chscore&quot; including its contents and replace each existing file.</p>
+
+  <h5>Update from 3.0 to 3.2</h5>
   <p>Back up the files &quot;counter.dat&quot; and, if present, &quot;ip.dat&quot; from folder &quot;chscore/modules/CHSCounter/&quot;. Delete the folder &quot;chscore&quot; afterwards and install the new version as explained above. Pasted in code on your website doesn't need to be changed again. Finally upload the backed up files to the &quot;chscore/data/&quot; folder and replace the existing ones.</p><br />
 
   <h4 id="en_faq">FAQ</h4>
@@ -147,7 +159,7 @@
    <li style="margin-bottom:10px;">Is it possible to translate the counter to another language?<br />
        Of course, copy an appropriate INI file (e.g. en-US.CHSCounter.ini) from the &quot;chscore/languages/&quot; folder and rename the official language code of the filename to the corresponding of the desired language. Like &quot;fr-FR.CHSCounter.ini&quot; for French in France or &quot;nl.CHSCounter.ini&quot; for general Dutch. Start translating the strings between the quotation marks and check the hints at the beginning of the file. By having a complete translation, upload it to the &quot;chscore/languages/&quot; folder and if applicable choose it from the language menu in the administration panel. Please send it also to me for providing it to other user! :)</li>
    <li style="margin-bottom:10px;">My question isn't answered here!<br />
-       Please visit my board at <a href="https://www.chrissyx.com/forum/" target="_blank">https://www.chrissyx.com/forum/</a> or write me an e-mail: <a href="mailto:chris@chrissyx.com">chris@chrissyx.com</a></li>
+       Please visit my board at <a href="https://www.chrissyx.com/forum/" target="_blank">https://www.chrissyx.com/forum/</a> or write me an email: <a href="mailto:chris@chrissyx.com">chris@chrissyx.com</a></li>
   </ul><br />
 
   <h4 id="en_credits">Credits</h4>
