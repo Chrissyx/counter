@@ -268,11 +268,12 @@ foreach($this->chsLanguage->getLangCodes() as $curCode)
   <p><code>&lt;!-- CHS - Counter --&gt;&lt;?php Loader::execute('CHSCounter'); ?&gt;&lt;!-- /CHS - Counter --&gt;</code></p>
   <p><?=$this->chsLanguage->getString('note2', 'install')?></p>
   <p><code>&lt;?php include('chscore/CHSCore.php'); ?&gt;</code></p>
-  <p><?=sprintf($this->chsLanguage->getString('note3', 'install'), '<a href="http://www.chrissyx-forum.de.vu/" target="_blank">http://www.chrissyx-forum.de.vu/</a>')?></p>
+  <p><?=sprintf($this->chsLanguage->getString('note3', 'install'), '<a href="https://www.chrissyx.com/forum/" target="_blank">https://www.chrissyx.com/forum/</a>')?></p>
   <p><a href="http://<?=$_SERVER['SERVER_NAME']?>/"><?=$this->chsLanguage->getString('goto1', 'install')?></a> &ndash; <a href="<?=$_SERVER['PHP_SELF']?>?module=CHSCounterAdmin"><?=$this->chsLanguage->getString('goto2', 'install')?></a></p>
 
 <?php
-                    exit(CHSFunctions::printTail('CHSCounter', 'common'));
+                    CHSFunctions::printTail('CHSCounter', 'common');
+                    exit;
                 }
             }
             if(isset($msg))
@@ -324,7 +325,7 @@ foreach($this->chsLanguage->getLangCodes() as $curCode)
      */
     public function onLoad()
     {
-        if(isset($_GET['module']) && $_GET['module'] == get_class())
+        if(isset($_GET['module']) && $_GET['module'] == get_class($this))
         {
             Loader::execute('CHSFunctions');
             $this->action = isset($_GET['action']) ? $_GET['action'] : (isset($_POST['action']) ? $_POST['action'] : '');
@@ -341,7 +342,8 @@ foreach($this->chsLanguage->getLangCodes() as $curCode)
                 $this->curPassHash = @current($passHashes = CHSFunctions::getPHPDataFile(substr($this->curPassFile = current(glob(Loader::getDataPath() . '*CHSCounter.dat.php')), 0, -4))) or exit($this->chsLanguage->getString('error_no_user', 'admin'));
                 $this->newPassHash = next($passHashes);
             }
-            exit($this->execute());
+            $this->execute();
+            exit;
         }
     }
 }
