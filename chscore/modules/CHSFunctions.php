@@ -3,10 +3,10 @@
  * General static functions for each module with initial instructions.
  *
  * @author Chrissyx <chris@chrissyx.com>
- * @copyright (c) 2009-2022 by Chrissyx
+ * @copyright (c) 2009-2026 by Chrissyx
  * @license http://creativecommons.org/licenses/by-nc-sa/3.0/ Creative Commons 3.0 by-nc-sa
  * @package CHS_Core
- * @version 1.2
+ * @version 1.2.1
  */
 class CHSFunctions implements CHSModule
 {
@@ -229,7 +229,7 @@ class CHSFunctions implements CHSModule
      */
     public static function isValidMail($mailAddress)
     {
-        return (bool) preg_match('/[\.0-9a-z_-]+@[\.0-9a-z-]+\.[a-z]+/si', $mailAddress);
+        return (bool) preg_match('/^[\.0-9a-z_-]+@[\.0-9a-z-]+\.[a-z]+$/si', $mailAddress);
     }
 
     /**

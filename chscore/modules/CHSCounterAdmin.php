@@ -3,10 +3,10 @@
  * Admin module for installing and managing the counter.
  *
  * @author Chrissyx <chris@chrissyx.com>
- * @copyright (c) 2004-2022 by Chrissyx
+ * @copyright (c) 2004-2026 by Chrissyx
  * @license http://creativecommons.org/licenses/by-nc-sa/3.0/ Creative Commons 3.0 by-nc-sa
  * @package CHS_Counter
- * @version 3.2
+ * @version 3.2.1
  */
 /**
  * Installs and manages the counter.
@@ -72,13 +72,13 @@ class CHSCounterAdmin implements CHSModule
             if(isset($_POST['countpw']))
             {
                 //Check for new pass first
-                if($this->newPassHash && CHSFunctions::getHash($_POST['countpw']) == $this->newPassHash)
+                if($this->newPassHash && hash_equals($this->newPassHash, CHSFunctions::getHash($_POST['countpw'])))
                 {
                     $this->curPassHash = $this->newPassHash;
                     CHSFunctions::setPHPDataFile(substr($this->curPassFile, 0, -4), $this->newPassHash);
                 }
                 //Check normal pass now
-                if(CHSFunctions::getHash($_POST['countpw']) == $this->curPassHash)
+                if(hash_equals($this->curPassHash,  CHSFunctions::getHash($_POST['countpw'])))
                 {
                     $_SESSION['countpw'] = CHSFunctions::getHash($_POST['countpw']);
                     unset($_POST['countpw']);
@@ -104,7 +104,7 @@ class CHSCounterAdmin implements CHSModule
 
 # Administration #
             case 'admin':
-            if(!isset($_SESSION['countpw']) || $_SESSION['countpw'] != $this->curPassHash)
+            if(!isset($_SESSION['countpw']) || !hash_equals($this->curPassHash, $_SESSION['countpw']))
                 exit($this->chsLanguage->getString('error_not_allowed', 'admin'));
             CHSFunctions::printHead('CHS &ndash; Counter: ' . $this->chsLanguage->getString('title', 'admin'), 'Counter, CHS, ' . $this->chsLanguage->getString('title', 'admin') . ', Chrissyx', $this->chsLanguage->getString('descr', 'admin'), $this->chsLanguage->getString('charset', 'common'), $this->chsLanguage->getLangCode());
             $settings = Loader::getModule('CHSConfig')->getConfigSet('CHSCounter');

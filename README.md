@@ -51,5 +51,4 @@ Back up the files `counter.dat` and, if present, `ip.dat` from folder `chscore/m
 © 2004-2022 by Chrissyx  
 Powered by V4 LeetCore Technology  
 https://www.chrissyx.de/  
-https://www.chrissyx.com/  
-[![Twitter Follow](https://img.shields.io/twitter/follow/CXHomepage?style=social)](https://twitter.com/intent/follow?screen_name=CXHomepage)
+https://www.chrissyx.com/
